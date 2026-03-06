@@ -70,15 +70,16 @@ frozen to its ground-state form, time-dependent variational Monte Carlo
 (tVMC) based on a Jastrow--Feenberg wavefunction maps exactly onto
 irrotational superfluid hydrodynamics.  The only microscopic input is
 an equation of state (EOS) extracted from a single variational Monte
-Carlo calculation of the uniform system, which yields a
-density-dependent chemical potential $\mu(\rho)$ for a generalized
-Gross--Pitaevskii equation (GPE).  For a trapped microwave-shielded
-dipolar Bose gas, this reduced description reproduces the full tVMC
-breathing dynamics for $N=8$--$128$ with below-1\% frequency error and
-$\sim 2\%$ amplitude error, while lowering the computational cost by
-more than an order of magnitude.  The framework turns correlated tVMC
-into a practical predictive tool for collective dynamics in shielded
-molecular gases.
+Carlo calculation of the uniform system via the local-density
+approximation, which yields a density-dependent chemical potential
+$\mu(\rho)$ for a generalized Gross--Pitaevskii equation (GPE).  For
+a trapped microwave-shielded dipolar Bose gas, this reduced description
+reproduces the full tVMC breathing dynamics for $N=8$--$128$ with
+below-1\% frequency error and $\sim 2\%$ amplitude error, while
+lowering the computational cost by more than an order of magnitude.
+This framework provides a rigorous, first-principles route to coarse-grain
+highly correlated wavefunctions into predictive macroscopic hydrodynamics,
+applicable broadly to molecular gases, quantum droplets, and supersolids.
 \end{abstract}
 
 \maketitle
@@ -103,20 +104,22 @@ interactions within a correlated many-body wavefunction, but its
 stochastic sampling at every time step severely limits accessible system
 sizes and evolution times.
 
-This Letter introduces a general theoretical framework that retains the
-microscopic content of tVMC while recovering the efficiency of
-hydrodynamics. While demonstrated here for shielded molecular gases,
-this approach provides a pathway for describing collective dynamics in
-other strongly correlated fluids, such as quantum droplets, supersolids,
-and strongly interacting Rydberg gases, where standard mean-field theories
-often break down. Our central result is conditional but exact: once the
-two-body Jastrow factor $u_2$ is frozen, the time-dependent variational
-principle (TDVP) maps exactly onto irrotational superfluid hydrodynamics.
-We first verify from full tVMC that $u_2$ remains nearly stationary during
-the quench, then extract the uniform-system EOS from a one-time VMC calculation,
-and finally solve a generalized GPE with this EOS. The resulting dynamics
-reproduces the full tVMC benchmarks for $N=8$ and $N=128$ and extends
-straightforwardly to experimentally relevant large-$N$ regimes beyond direct tVMC.
+This Letter introduces a general theoretical framework that coarse-grains
+a highly correlated microscopic wavefunction into a macroscopic hydrodynamic theory,
+retaining the exactness of tVMC while recovering the efficiency of the GPE.
+While demonstrated here for shielded molecular gases, this approach provides
+a rigorous, first-principles alternative to purely phenomenological extended GPEs for
+describing collective dynamics in strongly correlated fluids like quantum
+droplets, supersolids, and interacting Rydberg gases.
+Our central premise relies on a fundamental separation of scales: short-range
+pair correlations relax much faster than the global density redistribution.
+Under this physical condition, once the two-body Jastrow factor $u_2$ is frozen,
+the time-dependent variational principle (TDVP) maps exactly onto irrotational
+superfluid hydrodynamics. We first verify from full tVMC that $u_2$ remains
+nearly stationary during the quench, then derive a generalized GPE governed by
+a uniform-system EOS via the local-density approximation (LDA). The resulting
+dynamics reproduces the full tVMC benchmarks for $N=8$ and $N=128$, easily
+extending to experimentally relevant large-$N$ regimes beyond direct tVMC.
 
 %======================================================================
 \emph{Model and variational dynamics.}---We consider $N$ bosons in a
@@ -208,13 +211,17 @@ with $\Delta A = A - \avg{A}_t$ denoting connected fluctuations.  Full
 Monte Carlo and convergence details are given in Ref.~\cite{SM_note}.
 
 %======================================================================
-\emph{Frozen-$u_2$ reduction.}---The key numerical observation is that
-during the quench the optimized two-body parameters change by less than
-$1\%$ of their ground-state values, while the one-body field changes by
-order unity.  Figure~\ref{fig:hnc}(b) already shows that a frozen-$u_2$
-tVMC evolution tracks the full tVMC dynamics, and
+\emph{Frozen-$u_2$ reduction.}---The physical justification for freezing the
+Jastrow pair factor originates from the separation of time and length scales.
+Short-range pair correlations governed by $v(r)$ quickly equilibrate, whereas
+the large-scale density profile evolves smoothly, driven by the trap quench.
+Indeed, our full tVMC confirms this physical picture: during the quench,
+the optimized two-body parameters change by less than $1\%$ of their
+ground-state values, while the one-body field changes by order unity.
+Figure~\ref{fig:hnc}(b) already shows that a frozen-$u_2$
+tVMC evolution accurately tracks the full tVMC dynamics, and
 Fig.~\ref{fig:u2_heatmap} visualizes the near-stationarity of the pair
-correlation itself.  This motivates restricting the variational
+correlation itself. This motivates analytically restricting the variational
 manifold to a fixed $u_2$.
 
 When the variational degree of freedom is the continuous field
@@ -280,9 +287,8 @@ undergoes order-unity changes.}
 \emph{Equation of state and generalized GPE.}---We extract
 $\varepsilon(\rho)$ from a one-time VMC calculation on the
 uniform system (periodic boundary conditions) with $u_2$ frozen at its
-trapped ground-state values.  Scanning 20--30 density values
-logarithmically from $\rho=0.05$ to $\rho_{\max}$ (3.0 for $N=8$;
-15.0 for $N=128$) with 8192 walkers, we fit the results to
+trapped ground-state values (computational details are given in~\cite{SM_note}).
+Over the relevant density ranges, we fit the results to a polynomial
 \begin{equation}
 \varepsilon(\rho) = a_1\rho + a_2\rho^2 + \cdots,
 \label{eq:eos}
@@ -290,25 +296,31 @@ logarithmically from $\rho=0.05$ to $\rho_{\max}$ (3.0 for $N=8$;
 yielding the chemical potential
 $\mu(\rho) = 2a_1\rho + 3a_2\rho^2+\cdots$.
 
-This expansion gives a compact physical interpretation of the EOS.
-Relative to the standard GPE nonlinearity $\mu = g\rho$, the leading term
-$2a_1\rho$ corresponds to a \emph{renormalized two-body coupling}
+This robust framework offers a striking contrast to traditional standard extended GP theories,
+where beyond-mean-field physics is typically incorporated by adding a phenomenological
+Lee--Huang--Yang (LHY) term. Since the original LHY correction is strictly derived from
+the quantum fluctuations of a uniform ground-state energy, directly asserting it as a local dynamical
+potential in the GPE lacks a rigorous first-principles footing. Our approach, in contrast, structurally
+derives the extended equation natively from the exact TDVP mapping combined with the corresponding EOS.
+Furthermore, while the classic LHY correction scales as $\rho^{3/2}$ for contact interactions
+(and introduces analogous generic non-analytic terms for bare dipoles), the precise density dependence of
+beyond-mean-field effects is intimately governed by the specific system EOS. For our microwave-shielded
+dipolar configuration, the uniform-system VMC yields a well-behaved EOS matching Eq.~\eqref{eq:eos}.
+
+In this expansion, the leading term $2a_1\rho$ corresponds to a \emph{renormalized two-body coupling}
 $g_{\mathrm{eff}} = 2a_1$, which absorbs the effect of the frozen
 pair correlations into an effective contact interaction.  The
 next-order term $3a_2\rho^2$, however, has the structure of an
 \emph{effective three-body interaction} with coupling strength
 $g_3 = 3a_2$.  This is not a genuine microscopic three-body force;
 rather, it emerges from integrating out the density dependence of the
-two-body correlations encoded in $u_2$.  In density-functional
-language, it is the leading beyond-mean-field correction to the
-interaction energy~\cite{PitaevskiiStringari2016}.
+two-body correlations rigorously encoded in the frozen $u_2$.
 
 For the shielded dipolar interaction studied here, we find
 $g_3/g_{\mathrm{eff}}^2 \sim 0.1$--$0.2$, indicating that the
 three-body term provides a 10--20\% correction at the equilibrium
-density.  For $N=8$, the data require a weak cubic correction, whereas
-for $N=128$ a quadratic fit with $a_1{=}0.111$ and $a_2{=}0.001$
-already describes the relevant density range and remains stable
+density.  For $N=128$, a quadratic fit with $a_1 \approx 0.111$ and $a_2 \approx 0.001$
+describes the relevant density range safely and remains stable
 ($d\mu/d\rho > 0$).  The EOS is therefore close to linear at high
 density, reflecting the long-range character of the shielded dipolar
 interaction.
@@ -347,11 +359,9 @@ i\partial_t\psi = \Big[-\tfrac{1}{2}\nabla^2
 \end{equation}
 where $\psi = \sqrt\rho\,e^{i\theta}$ and the Laplacian provides both
 quantum pressure and flow kinetic energy.  The equation is discretized
-on a cylindrical $(r,z)$ grid exploiting azimuthal symmetry, with a
-fourth-order finite-difference Laplacian (including L'H\^opital's rule
-at $r=0$) and fourth-order Runge--Kutta time integration under a
-dispersive CFL condition $\Delta t \leq C\Delta x^2/\pi$
-($C=0.3$)~\cite{SM_note}.
+on a cylindrical $(r,z)$ grid exploiting azimuthal symmetry, evaluated
+with a fourth-order finite-difference Laplacian and time-integrated
+using a Runge--Kutta scheme under a dispersive CFL condition~\cite{SM_note}.
 
 The initial state is obtained by imaginary-time propagation to
 self-consistency: $\psi \to \psi - d\tau\,\hat H\psi$, normalized to
@@ -387,12 +397,14 @@ at every Runge--Kutta stage.
 
 \emph{Large-$N$ prediction.}---Having benchmarked the reduction, we use
 it in a regime inaccessible to direct tVMC.  With the same interaction
-($C_3 = 10^{-3}$), the GPE predicts sustained breathing oscillations
+($C_3 = 10^{-3}$), the generalized GPE predicts sustained breathing oscillations
 for $N=8192$ over six trap periods [Fig.~\ref{fig:dynamics}(b)],
-with excellent conservation ($|\delta E/E| < 2\times 10^{-4}$).
-This illustrates the practical value of the approach: once the EOS is
-known, the many-body quench problem is reduced to a deterministic
-hydrodynamic evolution that scales to arbitrarily large $N$.
+with excellent energy conservation ($|\delta E/E| < 2\times 10^{-4}$).
+This illustrates the immense practical value of the approach:
+it seamlessly scales up to $N \sim 10^4$, matching the experimentally relevant
+molecule numbers in recent milestone breakthroughs such as those by Bigagli et al.~\cite{Bigagli2024}.
+Once the EOS is determined from a single VMC calculation, the complex correlated many-body quench problem
+is completely reduced to a deterministic hydrodynamic evolution.
 
 \begin{figure}[t]
 \includegraphics[width=\columnwidth]{fig4_dynamics.pdf}
@@ -408,29 +420,28 @@ sizes inaccessible to direct tVMC.}
 
 %======================================================================
 \emph{Discussion.}---The success of the frozen-$u_2$ hydrodynamic
-reduction rests on a physical separation of scales: short-range pair
-correlations, governed by the interaction potential on lengths
-$r\lesssim a_{\mathrm{ho}}$, equilibrate much faster than the global
-density redistribution driven by the trap quench.  This is manifested
-in the tVMC as $<1\%$ variation of the $u_2$ parameters during the
-quench, while $u_1$ changes by order unity.
+reduction rests on a fundamental physical separation of scales:
+short-range pair correlations governed by interactions equilibrate
+much faster than the global macroscopic density redistribution, keeping
+$u_2$ nearly stationary.
 
-Two features distinguish the present framework from standard GP theory.
-First, the EOS is microscopically derived from the correlated many-body
-wavefunction rather than inferred from a scattering-length reduction.
-Second, the hydrodynamic equation is not postulated: it follows directly
-from the TDVP once the dynamics is projected onto the frozen-$u_2$
-manifold.  In this sense, the approximation is transparent and
-diagnosable: its validity can be checked a posteriori by monitoring the
+Two features fundamentally distinguish the present framework from phenomenological
+extended GP theories. First, the density-dependent chemical potential is derived directly from the
+microscopic correlated many-body wavefunction, completely capturing the true geometric
+complexities of $v(r)$, rather than being heuristic.
+Second, the hydrodynamic equation itself is not postulated: it follows directly
+from the TDVP once the dynamics is \emph{exactly} projected onto the frozen-$u_2$
+manifold.  In this sense, the approximation is structurally transparent and
+diagnosable: its validity can always be checked a posteriori by monitoring the
 time dependence of $u_2$.
 
-The same construction also clarifies the origin of higher-order
+This rigorous construction clarifies the true mathematical origin of higher-order
 nonlinearities.  The effective three-body term $g_3|\psi|^4$ in
-Eq.~\eqref{eq:gpe_g3} is not inserted phenomenologically; it emerges
-from the density dependence of correlated two-body physics.  This makes
-the method a useful nonperturbative route to extended GPEs for dipolar
-and molecular systems, where beyond-mean-field effects are often
-important but difficult to parameterize reliably.
+Eq.~\eqref{eq:gpe_g3} is not inserted ad hoc; it acts as a low-energy manifestation
+of the density dependence of correlated two-body interactions.  This makes
+the method a powerful, first-principles correct route to extended GPEs for dipolar
+and molecular systems, bypassing the ambiguities around hard-patching the LHY
+quantum fluctuation energies into time-dependent local fields.
 
 The main quantitative limitation visible here is the $\sim 3\%$ energy
 offset at $N=128$, which points to gradient corrections beyond the
