@@ -9,6 +9,9 @@
 *.out
 *.synctex.gz
 *Notes.bib
+*.fdb_latexmk
+*.fls
+*.toc
 
 # Python
 __pycache__/
