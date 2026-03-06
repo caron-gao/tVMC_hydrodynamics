@@ -1,0 +1,25 @@
+# Large walker files
+*.npy
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*Notes.bib
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Virtual environment
+.venv/
+
+# OS
+.DS_Store
+
+# Claude
+.claude/

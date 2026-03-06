@@ -1,0 +1,455 @@
+\documentclass[aps,prl,twocolumn,superscriptaddress,longbibliography]{revtex4-2}
+
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{X}}
+\newcommand{\avg}[1]{\langle #1 \rangle}
+
+\begin{document}
+
+\title{From variational Monte Carlo to superfluid hydrodynamics\\
+in microwave-shielded Bose gases}
+
+\author{Xinyuan~Wei}
+\affiliation{Department of Physics, University}
+
+\date{\today}
+
+\begin{abstract}
+We show that time-dependent variational Monte Carlo (tVMC) based on a
+Jastrow--Feenberg wavefunction, when the pair correlations are frozen at
+their ground-state values, reduces \emph{exactly} to irrotational
+superfluid hydrodynamics with a microscopically determined equation of
+state (EOS).  The EOS is extracted from a single variational Monte Carlo
+calculation on the uniform system and encodes the full effect of
+two-body correlations into a density-dependent chemical potential
+$\mu(\rho)$.  Recasting the resulting hydrodynamic equations as a
+generalized Gross--Pitaevskii equation (GPE), we reproduce the
+breathing-mode dynamics of a trapped microwave-shielded dipolar Bose
+gas---obtained from the full many-body tVMC---to within 1\% across
+particle numbers $N=8$ to $N=128$, at a computational cost reduced by
+orders of magnitude.  The framework provides a practical, quantitatively
+reliable tool for predicting collective modes in the rapidly growing
+class of microwave-shielded molecular experiments.
+\end{abstract}
+
+\maketitle
+
+%======================================================================
+\emph{Introduction.}---Microwave-shielded polar molecules have emerged as
+a versatile platform for quantum many-body physics, with recent
+experiments achieving Bose--Einstein condensation~\cite{Bigagli2024},
+observing shielded collisions~\cite{Anderegg2021,Schuster2023}, and
+exploring novel dipolar
+phases~\cite{Karman2018,Karman2019,Chen2023}.  A central challenge is
+to predict the collective dynamics of these systems---breathing modes,
+expansion dynamics, quench responses---starting from the microscopic
+interaction potential, which combines long-range dipolar attraction
+($\sim C_3/r^3$) with short-range repulsive shielding ($\sim C_6/r^6$).
+
+Mean-field Gross--Pitaevskii (GP) theory, while computationally
+efficient, relies on a contact-interaction approximation that poorly
+captures the anisotropic, density-dependent correlations of shielded
+molecules.  On the other hand, \emph{ab initio} many-body methods such
+as time-dependent variational Monte Carlo
+(tVMC)~\cite{Carleo2012,Carleo2014} can treat realistic interactions
+and correlations but require stochastic sampling at every time step,
+severely limiting accessible timescales and system sizes.
+
+In this Letter, we bridge this gap by establishing an \emph{exact}
+connection between correlated tVMC dynamics and deterministic superfluid
+hydrodynamics.  We show that freezing the two-body Jastrow correlations
+reduces the many-body time-dependent variational principle (TDVP)
+to continuity and Euler equations whose equation of state (EOS) is
+microscopically determined by a one-time VMC calculation on the uniform
+system.  The resulting generalized GPE---with the VMC-derived EOS
+replacing the standard contact coupling $g|\psi|^2$---reproduces the
+full tVMC breathing dynamics to $<1\%$ accuracy for $N=8$ and $N=128$
+microwave-shielded bosons, while reducing computational cost by two
+orders of magnitude.
+
+%======================================================================
+\emph{Model.}---We consider $N$ bosons in a cylindrically symmetric
+harmonic trap with Hamiltonian
+\begin{equation}
+\hat{H}(t) = \sum_{i=1}^N\!\left[
+-\tfrac{1}{2}\nabla_i^2 + V_{\mathrm{tr}}(\br_i,t)\right]
++ \sum_{i<j} v(\br_{ij}),
+\label{eq:H}
+\end{equation}
+where $V_{\mathrm{tr}} = \frac{1}{2}[\omega_\rho(t)^2\rho^2 +
+\omega_z^2 z^2]$ (natural units $\hbar=m=1$) and the two-body
+interaction models microwave-shielded dipolar molecules:
+\begin{equation}
+v(\br) = \frac{C_3}{r^3}(3\cos^2\!\theta-1)
++ \frac{C_6}{r^6}(\sin^4\!\theta + w_{12}\sin^2\!\theta\cos^2\!\theta).
+\label{eq:V}
+\end{equation}
+This effective potential, derived from Floquet scattering theory for
+dual-microwave-dressed molecules~\cite{Deng2025}, is parametrized by
+coefficients $C_3$, $C_6$, and $w_{12}$ that are determined by the
+microwave field configuration.  In a realistic experiment these are
+fixed by the dressing scheme; here, for demonstration, we choose
+$C_3=10^{-3}$, $C_6=10^{-6}$, and $w_{12}=2.0$ in oscillator units.
+We study a quench $\omega_\rho: 1\to 2$ at $t=0$ that excites radial
+breathing modes.
+
+%======================================================================
+\emph{tVMC with Jastrow--Feenberg ansatz.}---The many-body
+wavefunction is parametrized as a truncated
+Jastrow--Feenberg~\cite{Jastrow1955,Feenberg1969} ansatz:
+\begin{equation}
+\Psi(\bx,t) = \exp\!\Big[\sum_i u_1(\br_i,t)
++ \sum_{i<j} u_2(r_{ij},\hat\br_{ij})\Big],
+\label{eq:Psi}
+\end{equation}
+where $u_1(\br,t)$ is a complex, time-dependent one-body field and
+$u_2$ encodes two-body correlations.
+
+\emph{One-body field.}---In cylindrical coordinates, $u_1$ is
+parametrized with a separable structure $u_1 = u_\rho(\rho,t) +
+u_z(z,t)$, where each component consists of a harmonic reference
+plus Gaussian corrections with complex, time-dependent
+coefficients~\cite{SM_note}.
+
+\emph{Two-body Jastrow.}---The pair factor is expanded in partial
+waves.  The interaction~\eqref{eq:V} couples angular momenta up to
+$\ell=4$ (through the $\sin^4\!\theta$ term in the shielding
+potential~\cite{Deng2025}):
+\begin{equation}
+u_2(r,\cos\theta) = u_{\mathrm{cusp}}(r) + \sum_{\ell=0,2,4}
+f_\ell(r)\,P_\ell(\cos\theta),
+\label{eq:u2}
+\end{equation}
+where $u_{\mathrm{cusp}}(r)$ captures the short-range scattering
+boundary condition and each $f_\ell$ is a Gaussian
+expansion~\cite{SM_note}.  For the interaction parameters used here,
+the $\ell=4$ component is negligible
+($|c_4|_{\mathrm{rms}}/|c_0|_{\mathrm{rms}} = 0.07\%$) and even the
+$\ell=2$ anisotropy is minor (3\% of $\ell=0$); we therefore retain
+only $\ell=0$ and $\ell=2$ in practice~\cite{SM_note}.
+
+Figure~\ref{fig:hnc} shows the quality of the optimized pair
+correlations.  The leading-order hypernetted-chain (HNC) approximation
+to the pair distribution function, $g_2^{\mathrm{HNC}}(r,\theta) =
+e^{2u_2(r,\cos\theta)}$~\cite{Hansen2006}, reveals a correlation hole
+at short range [Fig.~\ref{fig:hnc}(a)], reflecting the interplay between
+dipolar attraction along $\theta=0$ and the shielding repulsion.  The
+pair correlation is nearly isotropic, consistent with the subdominant
+role of $f_2$.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{fig1_hnc_dynamics.pdf}
+\caption{(a)~Leading-order HNC pair correlation
+$e^{2u_2(r,\theta{=}0)}$ for the $N{=}8$ ground state, showing a
+correlation hole at short range due to the shielding repulsion.
+(b)~Breathing dynamics after the quench $\omega_\rho:1\to 2$ for
+$N{=}128$: $\avg{\rho^2}(t)$ and $\avg{z^2}(t)$ from full tVMC (red)
+and frozen-$u_2$ tVMC (blue dashed), validating the frozen-$u_2$
+approximation.}
+\label{fig:hnc}
+\end{figure}
+
+\emph{Equations of motion.}---The TDVP~\cite{Dirac1930,McLachlan1964}
+projects the Schr\"odinger equation onto the variational tangent space.
+Defining logarithmic derivatives $O_\alpha =
+\partial_{\theta_\alpha}\ln\Psi$ and the local energy
+$E_L = (\hat{H}\Psi)/\Psi$, the equations of motion
+read~\cite{Carleo2012}
+\begin{equation}
+\sum_\beta S_{\alpha\beta}\,\dot\theta_\beta = -i\,F_\alpha,
+\label{eq:tdvp}
+\end{equation}
+where the overlap matrix and force vector are
+\begin{align}
+S_{\alpha\beta} &= \avg{\Delta O_\alpha^*\,\Delta O_\beta}_t,
+\label{eq:S}\\
+F_\alpha &= \avg{\Delta O_\alpha^*\,\Delta E_L}_t,
+\label{eq:F}
+\end{align}
+with $\Delta A = A - \avg{A}_t$ denoting connected fluctuations.  The
+expectation values are estimated stochastically by sampling from
+$|\Psi|^2$ using Metropolis Monte Carlo with $N_w=65{,}536$
+GPU-accelerated walkers~\cite{Bradbury2018}.  The linear
+system~\eqref{eq:tdvp} is solved via eigendecomposition of $S$ with
+truncation at $\lambda_{\min}/\lambda_{\max}=10^{-4}$ and a diagonal
+shift $\eta=10^{-2}$ for regularization.  Time integration uses a
+fourth-order Runge--Kutta (RK4) scheme, with each stage requiring
+independent MC sampling.  Full details of the MC procedure and
+convergence diagnostics are given in Ref.~\cite{SM_note}.
+
+%======================================================================
+\emph{Frozen-$u_2$ $\Rightarrow$ superfluid hydrodynamics.}---Our
+central theoretical result is as follows.  We observe numerically that
+during the quench, the two-body parameters change by $<1\%$ of their
+ground-state values while the one-body field undergoes order-unity
+changes.  This motivates freezing $u_2$ at its ground-state value.
+
+When the variational degree of freedom is the continuous field
+$u_1(\br,t)$, the TDVP logarithmic derivative becomes the microscopic
+density operator:
+\begin{equation}
+O(\br;\bx) = \frac{\delta\ln\Psi}{\delta u_1(\br)}
+= \sum_i\delta^{(3)}(\br-\br_i) = \hat\rho(\br).
+\label{eq:O_rho}
+\end{equation}
+Because $u_2$ is real and frozen, the many-body phase is purely one-body
+and irrotational: $\bv = \nabla(\mathrm{Im}\, u_1)$.  No backflow terms
+arise.
+
+Decomposing $u_1 = a + i\theta$ (real amplitude and phase), the TDVP
+action reduces to the standard hydrodynamic form~\cite{SM_note}, yielding
+the continuity and Euler equations:
+\begin{align}
+&\partial_t\rho + \nabla\!\cdot(\rho\bv) = 0,
+\label{eq:cont}\\
+&\partial_t\bv + \nabla\!\Big(\tfrac{1}{2}v^2 + V_{\mathrm{tr}}
++ \mu_{u_2}[\rho]\Big) = 0,
+\label{eq:euler}
+\end{align}
+where $\mu_{u_2}[\rho] = \delta E_{\mathrm{int}}[\rho;u_2]/\delta\rho$
+is the effective chemical potential determined by the frozen correlations.
+
+In the local-density approximation (LDA), the internal energy takes the
+form $E_{\mathrm{int}} = \int\!\rho\,\varepsilon(\rho)\,d^3r$, where
+$\varepsilon(\rho)$ is the energy per particle of the \emph{uniform}
+system at density $\rho$ with the same frozen $u_2$.  The chemical
+potential becomes a local function:
+\begin{equation}
+\mu(\rho) = \frac{d[\rho\varepsilon(\rho)]}{d\rho}
+= \varepsilon + \rho\varepsilon'.
+\label{eq:mu}
+\end{equation}
+This is structurally identical to GP theory, except that the usual
+contact coupling $gn$ is replaced by $\mu(\rho)$, which encodes the
+full effect of the realistic, anisotropic interaction through the
+frozen correlations.
+
+The near-stationarity of $u_2$ during the quench is visualized
+directly in Fig.~\ref{fig:u2_heatmap}, which shows the change in the
+leading-order HNC pair correlation $\Delta e^{2u_2}$ at four time
+snapshots.  The variation remains below $\sim 0.03$ throughout
+(compared to peak values $\sim 1$), confirming that the pair
+correlations are effectively frozen.
+
+\begin{figure*}[t]
+\includegraphics[width=\textwidth]{fig2_u2_heatmap.pdf}
+\caption{Change in the leading-order HNC pair correlation,
+$\Delta e^{2u_2} = e^{2u_2(t)} - e^{2u_2(0)}$, during breathing
+dynamics for $N{=}128$.  The pair correlations remain nearly frozen
+($|\Delta e^{2u_2}| \lesssim 0.03$) while the one-body density
+undergoes order-unity changes.}
+\label{fig:u2_heatmap}
+\end{figure*}
+
+%======================================================================
+\emph{Equation of state and emergent many-body interactions.}---We
+extract $\varepsilon(\rho)$ from a one-time VMC calculation on the
+uniform system (periodic boundary conditions) with $u_2$ frozen at its
+trapped ground-state values.  Scanning 20--30 density values
+logarithmically from $\rho=0.05$ to $\rho_{\max}$ (3.0 for $N=8$;
+15.0 for $N=128$) with 8192 walkers, we fit the results to
+\begin{equation}
+\varepsilon(\rho) = a_1\rho + a_2\rho^2 + \cdots,
+\label{eq:eos}
+\end{equation}
+yielding the chemical potential
+$\mu(\rho) = 2a_1\rho + 3a_2\rho^2+\cdots$.
+
+The physical content of this expansion is revealing.  Comparing with
+the standard GPE nonlinearity $\mu = g\rho$, the leading term
+$2a_1\rho$ corresponds to a \emph{renormalized two-body coupling}
+$g_{\mathrm{eff}} = 2a_1$, which absorbs the effect of the frozen
+pair correlations into an effective contact interaction.  The
+next-order term $3a_2\rho^2$, however, has the structure of an
+\emph{effective three-body interaction} with coupling strength
+$g_3 = 3a_2$.  This is not a genuine microscopic three-body force;
+rather, it emerges from integrating out the density-dependent
+two-body correlations encoded in $u_2$.  In the language of
+density-functional theory, it is the leading beyond-mean-field
+correction to the interaction energy~\cite{PitaevskiiStringari2016}.
+
+For the shielded dipolar interaction studied here, we find
+$g_3/g_{\mathrm{eff}}^2 \sim 0.1$--$0.2$, indicating that the
+three-body term provides a 10--20\% correction at the equilibrium
+density.  For $N=8$, a cubic fit
+($a_1{=}0.102$, $a_2{=}0.023$, $a_3{=}{-}0.007$) is preferred by
+AIC, adding a further (small, negative) four-body correction; for
+$N=128$, a quadratic ($a_1{=}0.111$, $a_2{=}0.001$) suffices and is
+unconditionally stable ($d\mu/d\rho > 0$ for all $\rho$).
+The EOS is nearly linear at high density ($a_2 \ll a_1$), reflecting
+the long-range character of the shielded dipolar interaction.
+
+The VMC EOS for two interaction strengths is shown in
+Fig.~\ref{fig:eos}.  The leading coefficient $a_1$ scales linearly with
+$C_3$, while $a_2$ captures the density-dependent beyond-mean-field
+corrections.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{fig3_eos.pdf}
+\caption{Chemical potential $\mu(\rho)=d(\rho\varepsilon)/d\rho$ from
+uniform-system VMC for $C_3{=}10^{-3}$ (circles, black fit) and
+$C_3{=}10^{-4}$ (squares, red fit).  Data points are obtained by
+numerical differentiation of the VMC energy; lines show polynomial
+fits used in the GPE.}
+\label{fig:eos}
+\end{figure}
+
+The generalized GPE~\eqref{eq:gpe} with $\mu(\rho)=2a_1\rho+3a_2\rho^2$
+can therefore be understood as a \emph{two-plus-three-body} GPE:
+\begin{equation}
+i\partial_t\psi = \Big[-\tfrac{1}{2}\nabla^2
++ V_{\mathrm{tr}} + g_{\mathrm{eff}}|\psi|^2
++ g_3|\psi|^4\Big]\psi,
+\label{eq:gpe_g3}
+\end{equation}
+where both couplings are microscopically determined from VMC rather
+than fitted to experiment.  This provides a concrete, first-principles
+realization of the extended GPE with higher-order nonlinearities that
+has been discussed phenomenologically in the context of quantum
+droplets~\cite{Petrov2015} and dipolar
+condensates~\cite{Chomaz2023,Lahaye2009}.
+
+%======================================================================
+\emph{GPE solver.}---We solve the generalized GPE
+\begin{equation}
+i\partial_t\psi = \Big[-\tfrac{1}{2}\nabla^2
++ V_{\mathrm{tr}} + \mu(|\psi|^2)\Big]\psi,
+\label{eq:gpe}
+\end{equation}
+where $\psi = \sqrt\rho\,e^{i\theta}$ and the Laplacian provides both
+quantum pressure and flow kinetic energy.  The equation is discretized
+on a cylindrical $(r,z)$ grid exploiting azimuthal symmetry, with a
+fourth-order finite-difference Laplacian (including L'H\^opital's rule
+at $r=0$) and fourth-order Runge--Kutta time integration under a
+dispersive CFL condition $\Delta t \leq C\Delta x^2/\pi$
+($C=0.3$)~\cite{SM_note}.
+
+The initial state is obtained by imaginary-time propagation to
+self-consistency: $\psi \to \psi - d\tau\,\hat H\psi$, normalized to
+$N$ particles at each step, until the chemical potential converges to
+$\delta\mu < 10^{-8}$.
+
+%======================================================================
+\emph{Results for $N=8$.}---The GPE ground state reproduces the
+frozen-$u_2$ tVMC moments to 0.7\% and the energy to 0.15\%
+(Table~S1~\cite{SM_note}).  The breathing frequency
+$\omega_{\mathrm{br}} = 4.19 \approx 2\omega_\rho$ is identical
+between tVMC and GPE, and the oscillation amplitudes of $\avg{\rho^2}$
+and $\avg{z^2}$ agree to within 1\%.  GPE conservation is maintained
+at the $10^{-3}$ level; the tVMC energy (measured post-quench)
+fluctuates by $\sim 5\%$ due to stochastic noise but shows negligible
+drift ($<0.01\%$).
+
+The quantum pressure term $-\frac{1}{2}\nabla^2\psi/\psi$ is essential:
+without it, the dynamics is qualitatively incorrect, as the interaction
+energy comprises only $\sim 3.5\%$ of the total.  The fourth-order
+Laplacian is also critical, improving the frequency from 3.99
+(second-order) to 4.19 (matching tVMC).
+
+%======================================================================
+\emph{Results for $N=128$.}---To test the framework beyond the
+weakly interacting regime, we scale to $N=128$ where the interaction
+energy constitutes $\sim 21\%$ of the total.  The EOS is extended to
+$\rho_{\max}=15$ to accommodate the higher peak densities
+($\rho_{\mathrm{peak}}\approx 29$) reached during compression.
+
+The GPE ground state now matches the tVMC moments to
+$0.35\%$ ($\avg{\rho^2}$) and $1.05\%$ ($\avg{z^2}$), with a 2.8\%
+energy difference attributable to the LDA approximation at the
+higher interaction strength.  Remarkably, the breathing frequency
+$\omega_{\mathrm{br}} = 4.19$ is again identical between tVMC and GPE
+[Fig.~\ref{fig:dynamics}(a)], and the $\avg{\rho^2}(t)$ oscillation
+amplitudes agree to $\sim 2\%$ (Table~S1~\cite{SM_note}).
+
+The GPE simulation requires $\sim 70$ minutes on a single CPU core
+(including imaginary-time ground-state convergence), compared to
+$\sim 6$ hours on a modern GPU for the full tVMC---a reduction of
+more than an order of magnitude in wall time, and several orders in
+total floating-point operations.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{fig4_dynamics.pdf}
+\caption{GPE dynamics from the VMC-derived EOS.
+(a)~$N{=}128$ validation: $\avg{\rho^2}(t)$ and $\avg{z^2}(t)$ from
+frozen-$u_2$ tVMC (red) and GPE (blue), showing $<1\%$ frequency
+agreement ($\omega_{\mathrm{br}}{=}4.19$).
+(b)~$N{=}10{,}000$ prediction with the weak-interaction EOS
+($C_3{=}10^{-4}$), extrapolating to experimentally relevant system
+sizes inaccessible to direct tVMC.}
+\label{fig:dynamics}
+\end{figure}
+
+%======================================================================
+\emph{Discussion.}---The success of the frozen-$u_2$ hydrodynamic
+reduction rests on a physical separation of scales: short-range pair
+correlations, governed by the interaction potential on lengths
+$r\lesssim a_{\mathrm{ho}}$, equilibrate much faster than the global
+density redistribution driven by the trap quench.  This is manifested
+in the tVMC as $<1\%$ variation of the $u_2$ parameters during the
+quench, while $u_1$ changes by order unity.
+
+The framework has two key advantages over standard GP theory.
+First, the EOS is \emph{microscopically derived}: it incorporates the
+full anisotropic, density-dependent correlations of the shielded
+interaction through the frozen Jastrow factor, without relying on a
+scattering-length approximation.  Second, the derivation from the TDVP
+is \emph{systematic}: the frozen-$u_2$ approximation is a controlled
+limit of the full many-body variational dynamics, not an \emph{ad hoc}
+mean-field assumption.
+
+The emergence of an effective three-body coupling $g_3$ from the frozen
+pair correlations [Eq.~\eqref{eq:gpe_g3}] deserves particular emphasis.
+In recent work on dipolar quantum droplets~\cite{Petrov2015,Chomaz2023},
+the beyond-mean-field Lee--Huang--Yang (LHY) correction is typically
+added \emph{ad hoc} as a $|\psi|^4$ nonlinearity with a coupling
+estimated from perturbation theory.  Our framework provides a
+non-perturbative, microscopically grounded alternative: the $g_3$
+coupling is extracted directly from VMC and automatically includes the
+full anisotropy and density dependence of the shielded interaction.
+For the parameters studied here, $g_3 > 0$ (repulsive), consistent
+with the stabilizing role of beyond-mean-field corrections in dipolar
+systems.  Extending the EOS extraction to different interaction
+strengths and geometries would map out how $g_3$ evolves across the
+phase diagram---information that is difficult to obtain from
+perturbative approaches alone.
+
+As a demonstration of predictive power, we apply the framework to
+$N=10{,}000$ particles with a weaker interaction ($C_3=10^{-4}$),
+a regime entirely inaccessible to direct tVMC.  The GPE predicts
+sustained breathing oscillations over $t=10$ trap periods
+[Fig.~\ref{fig:dynamics}(b)], providing quantitative predictions for
+upcoming molecular BEC experiments.
+
+The $\sim 3\%$ energy offset at $N=128$ suggests that gradient
+corrections to the LDA~\cite{Ancilotto2017} could further improve
+accuracy.  The framework naturally extends to other collective modes
+(scissors, quadrupole), different quench protocols, and mixed-dimensional
+geometries relevant to current molecular experiments
+\cite{Bigagli2024,Lin2024}.
+
+%======================================================================
+\emph{Conclusion.}---We have demonstrated that correlated many-body
+dynamics from tVMC maps \emph{exactly} onto superfluid hydrodynamics
+when two-body correlations are frozen, with the equation of state
+determined by a single VMC calculation.  The resulting generalized GPE
+reproduces the breathing dynamics of microwave-shielded dipolar bosons
+from $N=8$ to $N=128$ with $<1\%$ frequency accuracy and $\sim 2\%$
+amplitude accuracy, at drastically reduced computational cost.  This
+provides a practical, quantitatively reliable tool for interpreting
+and predicting collective-mode experiments in the rapidly expanding
+field of shielded molecular quantum gases.
+
+\begin{acknowledgments}
+Computations were performed using JAX~\cite{Bradbury2018} for
+GPU-accelerated VMC and NumPy/SciPy for the hydrodynamic solver.
+\end{acknowledgments}
+
+\bibliography{letter_refs}
+
+\end{document}

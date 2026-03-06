@@ -1,0 +1,64 @@
+{
+  "system": {
+    "N": 8,
+    "omega_rho": 1.0,
+    "omega_z": 1.0
+  },
+  "potential": {
+    "C3": 0.001,
+    "C6": 1.0e-6,
+    "w1_w2": 2.0,
+    "w0_w2": 0.0,
+    "eps_r": 0.001
+  },
+  "cusp": {
+    "kappa": 0.1,
+    "eps": 0.005,
+    "rc": 0.01
+  },
+  "basis": {
+    "n_rho": 6,
+    "n_z": 6,
+    "n2": 8,
+    "ell_rho_min": 0.1,
+    "ell_rho_max": 3.0,
+    "ell_z_min": 0.1,
+    "ell_z_max": 3.0,
+    "ell2_min": 0.01,
+    "ell2_max": 0.5
+  },
+  "mcmc": {
+    "n_walkers": 16384,
+    "step_size": 0.45,
+    "n_burn": 15,
+    "n_burn_continue": 2,
+    "n_meas": 15,
+    "thin": 2,
+    "move_strategy": "single"
+  },
+  "tdvp": {
+    "diag_shift": 1.0e-4,
+    "eig_cutoff": 1.0e-7,
+    "omega_floor": 0.2,
+    "max_param_rms": 0.01,
+    "s_eps": 1.0e-10
+  },
+  "evolution": {
+    "imaginary_time": {
+      "d_tau": 1.0e-3,
+      "steps": 2000
+    },
+    "real_time": {
+      "dt": 2.0e-4,
+      "t_max": 6.0,
+      "quench_omega_rho": 2.0,
+      "quench_omega_z": 1.0,
+      "snapshot_interval": 2000
+    }
+  },
+  "output": {
+    "directory": "tvmc_output",
+    "results_file": "results.npz",
+    "walkers_file": "walkers.npy"
+  }
+}

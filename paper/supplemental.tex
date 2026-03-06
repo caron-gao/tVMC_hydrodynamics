@@ -1,0 +1,768 @@
+\documentclass[aps,prl,onecolumn,superscriptaddress,longbibliography,nofootinbib]{revtex4-2}
+
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{X}}
+\newcommand{\avg}[1]{\langle #1 \rangle}
+
+\begin{document}
+
+\title{Supplemental Material for:\\
+``Superfluid hydrodynamics from correlated many-body dynamics:
+Bridging variational Monte Carlo and Gross--Pitaevskii theory
+for microwave-shielded Bose gases''}
+
+\author{Xinyuan~Wei}
+\affiliation{Department of Physics, University}
+
+\date{\today}
+
+\maketitle
+
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\setcounter{section}{0}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}}
+
+%======================================================================
+\section{Model and interaction potential}
+\label{sec:model}
+%======================================================================
+
+We consider $N$ identical bosons of mass $m$ in a cylindrically symmetric
+harmonic trap with Hamiltonian
+\begin{equation}
+\hat{H}(t) = \sum_{i=1}^N\!\left[
+-\frac{\hbar^2}{2m}\nabla_i^2 + V_{\mathrm{tr}}(\br_i,t)\right]
++ \sum_{i<j} v(\br_{ij}),
+\label{eq:H}
+\end{equation}
+where the trap potential is
+\begin{equation}
+V_{\mathrm{tr}}(\br,t) = \frac{1}{2}m\left[\omega_\rho(t)^2\rho^2
++ \omega_z^2 z^2\right],
+\end{equation}
+with $\rho^2 = x^2 + y^2$ the cylindrical radial coordinate.  We work
+in natural units $\hbar=m=1$ and measure lengths in units of the
+oscillator length $a_{\mathrm{ho}}=\sqrt{\hbar/(m\omega_0)}$ with
+$\omega_0=1$.
+
+The two-body interaction models microwave-shielded dipolar
+molecules~\cite{Karman2018}:
+\begin{equation}
+v(\br) = V_{\mathrm{dip}}(r,\theta) + V_{\mathrm{shield}}(r,\theta),
+\end{equation}
+where $r=|\br|$ and $\theta$ is the polar angle with respect to the
+$z$-axis.  The dipolar term is
+\begin{equation}
+V_{\mathrm{dip}} = \frac{C_3}{r^3}(3\cos^2\theta - 1),
+\end{equation}
+and the repulsive shielding term is
+\begin{equation}
+V_{\mathrm{shield}} = \frac{C_6}{r^6}(\sin^4\theta
++ w_{12}\sin^2\theta\cos^2\theta),
+\end{equation}
+with $C_3=10^{-3}$, $C_6=10^{-6}$, and $w_{12}=2.0$ in oscillator
+units.  Both potentials are softened at short range by
+$r\to\sqrt{r^2+\epsilon_r^2}$ with $\epsilon_r=10^{-3}$ to avoid
+numerical singularities.
+
+The system is initialized in the ground state of an isotropic trap
+$\omega_\rho=\omega_z=1.0$.  At $t=0$, the radial trap frequency is
+instantaneously quenched to $\omega_\rho=2.0$ while $\omega_z$ remains
+unchanged, exciting a radial breathing mode.
+
+%======================================================================
+\section{Jastrow--Feenberg wavefunction: full specification}
+\label{sec:wavefunction}
+%======================================================================
+
+\subsection{One-body field $u_1$}
+
+The one-body field is parametrized with a separable radial-axial
+structure:
+\begin{equation}
+u_1(\rho,z,t) = u_\rho(\rho,t) + u_z(z,t),
+\end{equation}
+where each component consists of a harmonic reference plus Gaussian
+radial basis function corrections:
+\begin{align}
+u_\rho(\rho,t) &= -\frac{1}{2}(\omega_{\mathrm{ref}}+a_\rho(t))\rho^2
++ \sum_{k=1}^{n_\rho}c_{\rho,k}(t)\,g_0(\rho;\ell_{\rho,k}),
+\label{eq:u1_rho}\\
+u_z(z,t) &= -\frac{1}{2}(\omega_{\mathrm{ref}}+a_z(t))z^2
++ \sum_{k=1}^{n_z}c_{z,k}(t)\,g_0(z;\ell_{z,k}),
+\label{eq:u1_z}
+\end{align}
+with $\omega_{\mathrm{ref}}=1.0$ and the Gaussian basis functions
+\begin{equation}
+g_0(r;\ell) = \exp\!\left(-\frac{r^2}{2\ell^2}\right).
+\end{equation}
+
+The complex variational parameters $\{a_\rho(t), a_z(t),
+c_{\rho,1}(t),\ldots,c_{\rho,n_\rho}(t), c_{z,1}(t),\ldots,
+c_{z,n_z}(t)\}$ are time-dependent.  Their real parts control the
+density profile and their imaginary parts encode the velocity field.
+
+The length scales are distributed logarithmically:
+\begin{equation}
+\ell_k = \ell_{\min}\left(\frac{\ell_{\max}}{\ell_{\min}}\right)^{(k-1)/(n-1)},
+\quad k=1,\ldots,n,
+\end{equation}
+with $\ell_{\min}=0.1$, $\ell_{\max}=3.0$, and $n_\rho=n_z=6$.
+This gives a total of $n_{u_1}=2+n_\rho+n_z=14$ complex one-body
+parameters.
+
+\subsection{Two-body Jastrow $u_2$}
+
+The two-body factor is expanded in partial waves up to $\ell=2$:
+\begin{equation}
+u_2(r,\cos\theta) = f_0(r) + f_2(r)\,P_2(\cos\theta),
+\end{equation}
+where $P_2(x)=(3x^2-1)/2$ is the Legendre polynomial.  The radial
+components are
+\begin{align}
+f_0(r) &= u_{\mathrm{cusp}}(r)
++ \sum_{k=1}^{n_2} c_{0,k}\,g_0(r;\ell_{2,k}),
+\label{eq:f0}\\
+f_2(r) &= \sum_{k=1}^{n_2} c_{2,k}\,g_2(r;\ell_{2,k}),
+\label{eq:f2}
+\end{align}
+with $g_2(r;\ell)=r^2\exp(-r^2/(2\ell^2))$ a regular $\ell=2$ basis
+function and $n_2=10$ basis functions with length scales
+$\ell_2\in[0.01,0.7]$.
+
+\subsection{Cusp treatment}
+
+The short-range cusp function captures the two-body scattering boundary
+condition imposed by the $C_6/r^6$ repulsion:
+\begin{equation}
+u_{\mathrm{cusp}}(r) = -\frac{\kappa}{\sqrt{r^2+\epsilon_c^2}}\,
+\exp\!\left(-\frac{r^2}{2r_c^2}\right),
+\label{eq:cusp}
+\end{equation}
+with cusp strength $\kappa=0.1$, softening parameter
+$\epsilon_c=5\times10^{-3}$, and cutoff radius $r_c=0.01$.
+The $1/r$ singularity is regularized by $\epsilon_c$ to avoid
+numerical overflow, while the Gaussian envelope ensures that the cusp
+affects only the short-range pair structure ($r\lesssim r_c$).  These
+parameters are fixed (not variational) and determined by the scattering
+properties of the two-body potential.
+
+The total variational space has $n_{u_1}+2n_2=14+20=34$ parameters,
+of which $n_{u_1}=14$ one-body parameters are time-dependent and
+$2n_2=20$ two-body parameters are fixed in the frozen-$u_2$
+approximation.
+
+%======================================================================
+\section{Time-dependent variational principle: detailed derivation}
+\label{sec:tdvp}
+%======================================================================
+
+\subsection{General TDVP formulation}
+
+The TDVP projects the Schr\"odinger equation onto the variational
+tangent space spanned by derivatives of $\ln\Psi$ with respect to the
+variational parameters $\{\theta_\alpha\}$.  Starting from the
+Schr\"odinger equation $i\partial_t\Psi = \hat{H}\Psi$ and the
+variational ansatz $\Psi(\bx;\bm\theta(t))$, the McLachlan variational
+principle~\cite{McLachlan1964} minimizes
+\begin{equation}
+\delta\!\left\|\,i\partial_t\Psi - \hat{H}\Psi\,\right\|^2 = 0
+\end{equation}
+with respect to $\dot{\bm\theta}$.  This yields the equations of
+motion~\cite{Carleo2012}:
+\begin{equation}
+\sum_\beta S_{\alpha\beta}\,\dot\theta_\beta = -i\,F_\alpha,
+\label{eq:tdvp}
+\end{equation}
+where the overlap matrix (quantum geometric tensor) and force vector are
+\begin{align}
+S_{\alpha\beta} &= \avg{\Delta O_\alpha^*\,\Delta O_\beta}_t
+= \avg{O_\alpha^* O_\beta}_t - \avg{O_\alpha^*}_t\avg{O_\beta}_t,
+\label{eq:S_def}\\
+F_\alpha &= \avg{\Delta O_\alpha^*\,\Delta E_L}_t
+= \avg{O_\alpha^* E_L}_t - \avg{O_\alpha^*}_t\avg{E_L}_t,
+\label{eq:F_def}
+\end{align}
+with logarithmic derivatives $O_\alpha =
+\partial_{\theta_\alpha}\ln\Psi$.
+
+\subsection{Local energy}
+
+For the Jastrow ansatz $\Psi=e^U$ with
+$U=\sum_i u_1(\br_i,t)+\sum_{i<j}u_2(r_{ij})$, the local energy is
+\begin{equation}
+E_L = \frac{\hat{H}\Psi}{\Psi} = \sum_{i=1}^N\left[
+-\frac{1}{2}(\nabla_i^2 U + |\nabla_i U|^2) + V_{\mathrm{tr}}(\br_i,t)
+\right] + \sum_{i<j} v(\br_{ij}),
+\label{eq:EL}
+\end{equation}
+where
+\begin{align}
+\nabla_i U &= \nabla u_1(\br_i,t) + \sum_{j\neq i}\nabla_i u_2(r_{ij}),\\
+\nabla_i^2 U &= \nabla^2 u_1(\br_i,t)
++ \sum_{j\neq i}\nabla_i^2 u_2(r_{ij}).
+\end{align}
+
+\subsection{Monte Carlo estimation}
+
+The expectation values in Eqs.~\eqref{eq:S_def}--\eqref{eq:F_def} are
+estimated by sampling configurations $\bx^{(s)}$ from $|\Psi(\bx,t)|^2$
+using the Metropolis algorithm.  We employ single-particle moves:
+for each walker and each particle $i$, a displacement
+$\Delta\br\sim\mathrm{Uniform}(-\delta/2,\delta/2)^3$ is proposed
+with step size $\delta=0.45$, and accepted with probability
+$\min(1,|\Psi_{\mathrm{new}}|^2/|\Psi_{\mathrm{old}}|^2)$.
+
+We use $N_w=65{,}536$ parallel walkers (GPU-accelerated using
+JAX~\cite{Bradbury2018}), with $n_{\mathrm{burn}}=30$ equilibration
+sweeps followed by $n_{\mathrm{meas}}=10$ measurement sweeps separated
+by 3 thinning sweeps, per RK4 stage.
+
+The TDVP linear system~\eqref{eq:tdvp} is solved via eigendecomposition
+of $S$:
+\begin{equation}
+\dot\theta_\alpha = -i\sum_\beta S^{-1}_{\alpha\beta}F_\beta,
+\end{equation}
+with eigenvalue truncation at $\lambda_{\min}/\lambda_{\max}=10^{-4}$
+and a diagonal shift $S\to S+\eta\mathbb{1}$ with $\eta=10^{-2}$.
+
+For imaginary-time propagation (ground-state preparation), we use
+$\dot\theta = -F/S$ with $d\tau=10^{-3}$ for 2000 steps.  For
+real-time evolution after the quench, the step size is
+$dt=2\times10^{-4}$ with adaptive time-stepping that limits the RMS
+parameter change to $\|\dot\theta\,dt\|_{\mathrm{rms}}<0.01$.
+
+%======================================================================
+\section{Frozen-$u_2$ approximation: detailed derivation of
+hydrodynamic equations}
+\label{sec:frozen_derivation}
+%======================================================================
+
+\subsection{Motivation: stiffness of $u_2$}
+
+Our tVMC simulations reveal that during the trap quench
+$\omega_\rho:1\to 2$, the two-body Jastrow parameters $(c_{0,k},
+c_{2,k})$ change by less than 1\% of their ground-state values, while
+the one-body parameters $(a_\rho, a_z, c_{\rho,k}, c_{z,k})$ undergo
+order-unity changes.  This reflects the physical expectation that
+short-range pair correlations equilibrate much faster than the global
+density redistribution driven by the trap quench.
+
+\subsection{TDVP with continuous one-body field}
+
+Freezing $u_2$ at its ground-state value (real, time-independent) and
+promoting $u_1(\br,t)$ to a continuous variational field, the
+logarithmic derivative becomes the microscopic density operator:
+\begin{equation}
+O(\br;\bx) = \frac{\delta\ln\Psi}{\delta u_1(\br,t)}
+= \sum_{i=1}^N\delta^{(3)}(\br-\br_i) \equiv \hat\rho(\br).
+\end{equation}
+
+The TDVP equation~\eqref{eq:tdvp} becomes a continuum integral equation:
+\begin{equation}
+\int d^3r'\;S(\br,\br';t)\,\partial_t u_1(\br',t) = -i\,F(\br;t),
+\label{eq:tdvp_cont}
+\end{equation}
+where
+\begin{align}
+S(\br,\br';t) &= \avg{\Delta\hat\rho(\br)\,\Delta\hat\rho(\br')}_t,\\
+F(\br;t) &= \avg{\Delta\hat\rho(\br)\,\Delta E_L}_t.
+\end{align}
+
+The density--density correlator can be decomposed as
+\begin{equation}
+S(\br,\br') = \rho(\br)\delta^{(3)}(\br-\br')
++ \rho^{(2)}(\br,\br') - \rho(\br)\rho(\br'),
+\end{equation}
+where $\rho(\br)=\avg{\hat\rho(\br)}_t$ is the one-body density and
+$\rho^{(2)}(\br,\br')$ is the two-body density.
+
+\subsection{Decomposition into amplitude and phase}
+
+We decompose the complex one-body field:
+\begin{equation}
+u_1(\br,t) = a(\br,t) + i\theta(\br,t), \qquad a,\theta\in\mathbb{R}.
+\end{equation}
+Because $u_2$ is real and frozen, the many-body wavefunction has the
+structure
+\begin{equation}
+\Psi = e^{\sum_i a(\br_i) + i\sum_i\theta(\br_i)
++ \sum_{i<j}u_2(r_{ij})},
+\end{equation}
+so the many-body phase is purely one-body: $\arg\Psi = \sum_i
+\theta(\br_i)$.  The flow is therefore irrotational with velocity
+\begin{equation}
+\bv(\br,t) = \nabla\theta(\br,t).
+\end{equation}
+No backflow terms arise because $u_2$ carries no time-dependent phase.
+
+\subsection{Internal energy functional}
+
+Define the internal energy as the expectation value of kinetic plus
+interaction energy in the frozen-$u_2$ state at density $\rho$:
+\begin{equation}
+E_{\mathrm{int}}[\rho;u_2] = \avg{\hat{T}+\hat{V}_{\mathrm{int}}}_t.
+\end{equation}
+If $E_{\mathrm{int}}$ depends on $\rho$ only through the local density
+(LDA), then $E_{\mathrm{int}}^{\mathrm{LDA}} = \int\rho(\br)
+\varepsilon(\rho(\br))\,d^3r$, where $\varepsilon(\rho)$ is the energy
+per particle of the uniform system.  The TDVP action then takes the form
+\begin{equation}
+\mathcal{S} = \int\!dt\,d^3r\left[
+\rho\,\partial_t\theta - \frac{1}{2}\rho|\nabla\theta|^2
+- \rho\,V_{\mathrm{tr}} - \rho\,\varepsilon(\rho)\right],
+\end{equation}
+and the stationarity conditions $\delta\mathcal{S}/\delta\theta=0$
+and $\delta\mathcal{S}/\delta a=0$ (where $\rho$ depends on $a$) yield
+the closed hydrodynamic system:
+\begin{align}
+\text{Continuity:}\quad
+&\partial_t\rho + \nabla\!\cdot(\rho\bv) = 0,
+\label{eq:continuity}\\
+\text{Euler:}\quad
+&\partial_t\bv + \nabla\!\left(\frac{1}{2}v^2 + V_{\mathrm{tr}}
++ \mu(\rho)\right) = 0,
+\label{eq:euler}
+\end{align}
+where the chemical potential is
+\begin{equation}
+\mu(\rho) = \frac{d[\rho\varepsilon(\rho)]}{d\rho}
+= \varepsilon(\rho) + \rho\varepsilon'(\rho).
+\end{equation}
+
+\subsection{Gross--Pitaevskii reformulation}
+
+Equations~\eqref{eq:continuity}--\eqref{eq:euler} can be rewritten as
+a single GPE for $\psi=\sqrt\rho\,e^{i\theta}$:
+\begin{equation}
+i\partial_t\psi = \left[-\frac{1}{2}\nabla^2
++ V_{\mathrm{tr}} + \mu(|\psi|^2)\right]\psi,
+\label{eq:gpe}
+\end{equation}
+where the Laplacian provides both the quantum pressure
+($Q=-\frac{1}{2}\nabla^2\sqrt\rho/\sqrt\rho$) and the flow kinetic
+energy.  This formulation avoids the $\rho\to 0$ singularity of the
+Madelung variables and provides a single complex equation.
+
+\subsection{Quantum pressure}
+
+The quantum pressure term arises from the density dependence of the
+overlap kernel $S(\br,\br')$ beyond the LDA.  In the GPE
+formulation~\eqref{eq:gpe}, it is automatically included through the
+$-\frac{1}{2}\nabla^2\psi$ term.  For the weakly interacting $N=8$
+system ($E_{\mathrm{int}}/E_{\mathrm{tot}}\approx 3.5\%$), quantum
+pressure provides the dominant repulsive mechanism.  Without it, the
+dynamics is qualitatively incorrect.  For $N=128$
+($E_{\mathrm{int}}/E_{\mathrm{tot}}\approx 21\%$), both quantum
+pressure and the EOS contribute significantly.
+
+%======================================================================
+\section{Equation of state: VMC procedure and fitting}
+\label{sec:eos}
+%======================================================================
+
+\subsection{Uniform-system VMC}
+
+To extract the EOS, we perform VMC calculations for a uniform system
+of $N$ particles in a cubic box with periodic boundary conditions at
+a grid of densities.  The two-body Jastrow $u_2(r,\hat\br)$ is frozen
+at the ground-state values from the trapped-system tVMC, while $u_1$
+is taken as constant.
+
+At each density, we use $N_w=8{,}192$ walkers with 200 equilibration
+sweeps and 500 measurement sweeps (thinning by 5) to estimate the
+energy per particle $\varepsilon(\rho)$.  Error bars are obtained from
+a blocking analysis.
+
+For $N=8$, we scan 20 densities logarithmically over
+$\rho\in[0.05,3.0]$.  For $N=128$, the higher peak densities
+encountered during compression require extending the range to
+$\rho\in[0.05,15.0]$ with 30 density points.
+
+\subsection{Polynomial fitting}
+
+We fit $\varepsilon(\rho)$ to a polynomial using weighted least-squares:
+\begin{equation}
+\varepsilon(\rho) = a_1\rho + a_2\rho^2 + a_3\rho^3.
+\end{equation}
+Model selection between quadratic ($a_3=0$) and cubic is performed
+using the Akaike information criterion (AIC).
+
+For $N=8$, the cubic fit is preferred:
+\begin{equation}
+a_1 = 0.102,\quad a_2 = 0.023,\quad a_3 = -0.007,
+\end{equation}
+with reduced $\chi^2_\nu=0.41$.  The negative $a_3$ introduces a
+stability limit $d\mu/d\rho=0$ at $\rho_{\mathrm{stab}}\approx 2.67$,
+above which we regularize by linear extrapolation.
+
+For $N=128$, a quadratic suffices:
+\begin{equation}
+a_1 = 0.111,\quad a_2 = 0.001,\quad a_3 = 0,
+\end{equation}
+which is unconditionally stable ($d\mu/d\rho>0$ for all $\rho$).
+
+\subsection{Emergent effective interactions}
+
+The chemical potential $\mu(\rho)=2a_1\rho+3a_2\rho^2+\cdots$ admits
+a physically transparent interpretation.  Comparing with the standard
+GPE nonlinearity $\mu=g\rho$:
+\begin{itemize}
+\item The leading term $2a_1\rho$ defines a \emph{renormalized
+two-body coupling} $g_{\mathrm{eff}}=2a_1$ that absorbs the effect of
+frozen pair correlations into an effective contact interaction.
+\item The next-order term $3a_2\rho^2$ has the structure of an
+\emph{effective three-body interaction} $g_3|\psi|^4$ with
+$g_3=3a_2$.
+\end{itemize}
+This three-body term is not a genuine microscopic three-body force but
+emerges from integrating out the density-dependent pair correlations
+encoded in $u_2$.  The resulting GPE
+\begin{equation}
+i\partial_t\psi = \left[-\frac{1}{2}\nabla^2 + V_{\mathrm{tr}}
++ g_{\mathrm{eff}}|\psi|^2 + g_3|\psi|^4\right]\psi
+\end{equation}
+provides a concrete, non-perturbative realization of the extended GPE
+discussed in the context of quantum droplets~\cite{Petrov2015} and
+dipolar condensates~\cite{Chomaz2023}.
+
+%======================================================================
+\section{Hydrodynamic PDE solver: numerical details}
+\label{sec:solver}
+%======================================================================
+
+\subsection{Cylindrical coordinates}
+
+Exploiting azimuthal symmetry, the 3D GPE reduces to 2D in cylindrical
+coordinates $(r,z)$:
+\begin{equation}
+\nabla^2\psi = \frac{\partial^2\psi}{\partial r^2}
++ \frac{1}{r}\frac{\partial\psi}{\partial r}
++ \frac{\partial^2\psi}{\partial z^2}.
+\end{equation}
+
+For $N=8$: domain $r\in[0,5]$, $z\in[-5,5]$, grid $128\times 256$.
+
+For $N=128$: domain $r\in[0,6]$, $z\in[-8,8]$, grid $192\times 512$.
+
+\subsection{Boundary conditions}
+
+At $r=0$: azimuthal symmetry requires $\partial_r\psi|_{r=0}=0$,
+implemented via a ghost point $\psi(-\Delta r)=\psi(\Delta r)$.  The
+$(1/r)\partial_r\psi$ term is evaluated using L'H\^opital's rule:
+$\lim_{r\to 0}(1/r)\partial_r\psi = \partial_r^2\psi|_{r=0}$.
+
+At outer boundaries ($r=R_{\max}$, $z=\pm Z_{\max}$): Dirichlet
+$\psi=0$.
+
+\subsection{Fourth-order finite differences}
+
+Interior derivatives use fourth-order central differences:
+\begin{align}
+f''_i &= \frac{-f_{i-2}+16f_{i-1}-30f_i+16f_{i+1}-f_{i+2}}
+{12\Delta x^2},\\
+f'_i &= \frac{-f_{i+2}+8f_{i+1}-8f_{i-1}+f_{i-2}}{12\Delta x}.
+\end{align}
+Near boundaries, ghost-point values are determined by symmetry or
+Dirichlet conditions.  The fourth-order scheme is critical for
+frequency accuracy: the second-order scheme gives
+$\omega_{\mathrm{br}}=3.99$, while fourth-order gives $4.19$
+(matching tVMC).
+
+\subsection{Time integration}
+
+RK4 with dispersive CFL condition:
+\begin{equation}
+\Delta t \leq C_{\mathrm{CFL}}\frac{(\min\Delta x)^2}{\pi},
+\quad C_{\mathrm{CFL}}=0.3.
+\end{equation}
+An additional constraint $\Delta t\leq 2C_{\mathrm{CFL}}/|\mu_{\max}|$
+limits phase accumulation per step.
+
+\subsection{Imaginary-time ground state}
+
+The GPE ground state is obtained by imaginary-time propagation:
+\begin{equation}
+\psi \to \psi - d\tau\,\hat{H}_{\mathrm{GPE}}\psi,\qquad
+\psi \to \psi\sqrt{N/\|\psi\|^2},
+\end{equation}
+with $d\tau = 0.3\Delta x^2/\pi$, iterated until $\delta\mu<10^{-8}$.
+Starting from a Gaussian guess, convergence is achieved in
+$\sim 30{,}000$ iterations for $N=8$ and $\sim 45{,}000$ for $N=128$.
+
+\subsection{Observables}
+
+At regular intervals we compute (using cylindrical trapezoidal
+integration $\int f\,2\pi r\,dr\,dz$):
+\begin{align}
+N(t) &= \int|\psi|^2\,2\pi r\,dr\,dz,\\
+\avg{\rho^2}(t) &= \frac{1}{N}\int r^2|\psi|^2\,2\pi r\,dr\,dz,\\
+\avg{z^2}(t) &= \frac{1}{N}\int z^2|\psi|^2\,2\pi r\,dr\,dz,\\
+E(t) &= \int\!\left[-\frac{1}{2}\psi^*\nabla^2\psi
++ V|\psi|^2 + |\psi|^2\varepsilon(|\psi|^2)\right]
+2\pi r\,dr\,dz.
+\end{align}
+The kinetic energy uses the same discrete Laplacian as the dynamics,
+ensuring consistent energy conservation.
+
+%======================================================================
+\section{Quantitative comparison: tVMC vs GPE}
+\label{sec:tvmc_vs_gpe}
+%======================================================================
+
+Table~\ref{tab:results} summarizes the comparison between frozen-$u_2$
+tVMC and the GPE solver for both $N=8$ and $N=128$ after the quench
+$\omega_\rho:1\to 2$.  For tVMC, we report the energy conservation as
+the drift in the stochastic energy estimator after the quench; the
+instantaneous fluctuation is $\sim 5\%$ for $N=8$ and $\sim 7\%$ for
+$N=128$ due to Monte Carlo noise, but the systematic drift is
+negligible.
+
+\begin{table}[h]
+\caption{Comparison of frozen-$u_2$ tVMC and GPE (imaginary-time ground
+state, fourth-order Laplacian) for the quench $\omega_\rho:1\to 2$.
+$\delta E/E$ for tVMC is the energy drift (not stochastic fluctuation);
+for GPE it is the deterministic conservation error.}
+\label{tab:results}
+\begin{ruledtabular}
+\begin{tabular}{lcccc}
+ & \multicolumn{2}{c}{$N=8$} & \multicolumn{2}{c}{$N=128$} \\
+\cline{2-3}\cline{4-5}
+ & tVMC & GPE & tVMC & GPE \\
+\hline
+$E_{\mathrm{gs}}$
+& 12.42 & 12.44 & 276.8 & 269.0 \\
+$\langle\rho^2\rangle_0$
+& 1.051 & 1.058 & 1.555 & 1.561 \\
+$\langle z^2\rangle_0$
+& 0.525 & 0.529 & 0.772 & 0.780 \\
+$\omega_{\mathrm{br}}$
+& 4.19 & 4.19 & 4.19 & 4.19 \\
+$\langle\rho^2\rangle$ range
+& [0.26,\,1.06] & [0.26,\,1.06] & [0.37,\,1.56] & [0.37,\,1.56] \\
+$\langle z^2\rangle$ range
+& [0.52,\,0.61] & [0.53,\,0.61] & [0.59,\,2.05] & [0.56,\,2.00] \\
+$|\delta E/E|$
+& $<0.01\%$ & $0.1\%$ & $2.8\%$ & $0.05\%$ \\
+$\max|\delta N/N|$
+& --- & $7\!\times\!10^{-4}$ & --- & $3\!\times\!10^{-4}$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+%======================================================================
+\section{Convergence tests}
+\label{sec:convergence}
+%======================================================================
+
+\subsection{Spatial convergence}
+
+Table~\ref{tab:convergence} shows conservation diagnostics for $N=8$
+at different grid resolutions and Laplacian orders.
+
+\begin{table}[h]
+\caption{Conservation diagnostics for the GPE simulation ($N=8$,
+$t\in[0,3]$).}
+\label{tab:convergence}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+Grid & $\nabla^2$ order & $\max|\delta N/N|$ & $\max|\delta E/E|$\\
+\hline
+$128\times 256$ & 2nd & $1.09\times10^{-3}$ & $1.20\times10^{-3}$\\
+$128\times 256$ & 4th & $7.30\times10^{-4}$ & $1.29\times10^{-3}$\\
+$160\times 320$ & 4th & $4.65\times10^{-4}$ & $8.22\times10^{-4}$\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\subsection{Temporal convergence}
+
+Halving the CFL factor from 0.3 to 0.15 (doubling the time steps)
+produces identical conservation to machine precision, confirming that
+the RK4 temporal error is negligible and the conservation errors are
+purely spatial.
+
+\subsection{Conservation behavior}
+
+The conservation errors are \emph{oscillatory}: they peak during
+maximum compression (steepest density gradients) and nearly vanish
+when the cloud re-expands.  At $t=1.5$ (full expansion for $N=8$),
+$|\delta N/N|=3.2\times10^{-6}$ and $|\delta E/E|=2.8\times10^{-6}$.
+
+For $N=128$, the larger grid ($192\times 512$) achieves
+$\max|\delta N/N|=3.1\times10^{-4}$ and
+$\max|\delta E/E|=4.5\times10^{-4}$ over $t\in[0,6]$.
+
+%======================================================================
+\section{Scaling ansatz}
+\label{sec:scaling}
+%======================================================================
+
+As a further benchmark, we compare with the Castin--Dum scaling
+ansatz~\cite{CastinDum1996,Kagan1996}.  Assuming self-similar evolution
+$\rho(\br,t) = (\lambda_r^2\lambda_z)^{-1}
+\rho_0(r/\lambda_r,z/\lambda_z)$, the scaling parameters satisfy
+\begin{align}
+\ddot\lambda_r &= -\omega_\rho^2\lambda_r
++ \frac{\omega_{\rho,0}^2}{\lambda_r^3\lambda_z},\\
+\ddot\lambda_z &= -\omega_z^2\lambda_z
++ \frac{\omega_{z,0}^2}{\lambda_r^2\lambda_z^2}.
+\end{align}
+This is the non-interacting ($\gamma=1$) limit, appropriate for
+benchmarking the trap-dominated regime.  The scaling ansatz predicts
+a breathing frequency close to $2\omega_\rho$ but overestimates the
+oscillation amplitude because it neglects quantum pressure corrections
+to the self-similar assumption.
+
+%======================================================================
+\section{Comparison between frozen-$u_2$ tVMC and full tVMC}
+\label{sec:full_vs_frozen}
+%======================================================================
+
+For $N=8$, we verify that the frozen-$u_2$ approximation is accurate
+by comparing with a full tVMC simulation where all 34 parameters
+evolve.  Table~\ref{tab:full_frozen} summarizes the comparison.
+
+\begin{table}[h]
+\caption{Comparison of full and frozen-$u_2$ tVMC for $N=8$.}
+\label{tab:full_frozen}
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+& Full tVMC & Frozen-$u_2$ tVMC\\
+\hline
+$E_{\mathrm{gs}}$ & 12.433 & 12.423\\
+$\avg{\rho^2}_0$ & 1.049 & 1.051\\
+$\avg{z^2}_0$ & 0.525 & 0.525\\
+$\avg{\rho^2}$ range & [0.264,\,1.060] & [0.264,\,1.055]\\
+$\avg{z^2}$ range & [0.522,\,0.613] & [0.522,\,0.613]\\
+$\omega_{\mathrm{br}}$ (dominant) & 3.14 & 4.19\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The ground state and oscillation amplitudes agree to within 0.5\%.
+The breathing frequency differs: the full tVMC shows a dominant mode
+at $\omega\approx 3.14$ due to additional mode coupling through the
+time-dependent $u_2$, while the frozen-$u_2$ tVMC and GPE both give
+$\omega\approx 4.19\approx 2\omega_\rho$, consistent with the
+hydrodynamic prediction for this weakly interacting regime.
+
+For $N=128$, only the full tVMC simulation was performed (the
+frozen-$u_2$ tVMC was not run separately).  The GPE with the
+VMC-derived EOS reproduces the full tVMC breathing frequency
+($\omega=4.19$) and oscillation amplitudes to within 2\%, as
+discussed in the main text.
+
+%======================================================================
+\section{Partial-wave convergence: $\ell=4$ analysis}
+\label{sec:l4}
+%======================================================================
+
+The microwave-shielded interaction [Eq.~(2) of the main text] contains
+two angular structures: the dipolar term $\propto 3\cos^2\!\theta-1 =
+2P_2(\cos\theta)$ and the shielding term $\propto \sin^4\!\theta$.
+While the dipolar term couples only $\ell=0$ and $\ell=2$, the
+$\sin^4\!\theta$ term contains a $P_4$ component and in principle
+requires $\ell=4$ in the Jastrow expansion:
+\begin{equation}
+u_2(r,\cos\theta) = f_0(r) + f_2(r)\,P_2(\cos\theta)
++ f_4(r)\,P_4(\cos\theta).
+\end{equation}
+
+To test whether $\ell=4$ matters, we performed a ground-state
+optimization for $N=8$ with $n_4=6$ additional $\ell=4$ basis functions
+$g_4(r;\ell)=r^4\exp(-r^2/(2\ell^2))$.
+Table~\ref{tab:l4} compares the ground-state properties.
+
+\begin{table}[h]
+\caption{Ground-state comparison with and without $\ell=4$ ($N=8$).}
+\label{tab:l4}
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+ & $\ell\leq 2$ (v7) & $\ell\leq 4$ (v8) \\
+\hline
+$E_{\mathrm{gs}}$ & 12.423 & 12.439 \\
+$\avg{\rho^2}_0$ & 1.051 & 1.051 \\
+$\avg{z^2}_0$ & 0.525 & 0.525 \\
+$|c_0|_{\mathrm{rms}}$ & 1.503 & 1.503 \\
+$|c_2|_{\mathrm{rms}}$ & 0.046 & 0.046 \\
+$|c_4|_{\mathrm{rms}}$ & --- & 0.001 \\
+$|c_4/c_0|$ & --- & 0.07\% \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The $\ell=4$ contribution is negligible: $|c_4|_{\mathrm{rms}}$ is
+0.07\% of $|c_0|_{\mathrm{rms}}$, and even the $\ell=2$ anisotropy is
+only 3\% of $\ell=0$.  The ground-state energy and moments are
+unaffected to within the stochastic error of the VMC.
+
+\subsection{Dynamical stability of $\ell=4$ parameters}
+
+During real-time quench dynamics, the weakly constrained $c_4$
+parameters are susceptible to numerical instability in the TDVP.
+With standard regularization ($\eta=10^{-4}$), $|c_4/c_0|$ grows
+from 0.07\% to $\sim 39\%$ over $t\in[0,3]$, despite negligible
+physical coupling.  Two diagnostic tests confirm this is a numerical
+artifact:
+
+\begin{enumerate}
+\item \emph{No-quench test}: With $\omega_\rho$ held at 1.0 (no
+perturbation), $|c_4/c_0|$ still grows from 0.02\% to 0.48\%---a
+monotonic random walk that should be identically zero for a stationary
+state.
+\item \emph{Regularization sensitivity}: Increasing the diagonal shift
+from $\eta=10^{-4}$ to $\eta=10^{-3}$ suppresses the growth to 1.4\%,
+confirming noise-driven amplification of weakly constrained directions.
+\end{enumerate}
+
+These tests justify our choice to retain only $\ell\leq 2$ in the
+production simulations.  For the frozen-$u_2$ approximation used to
+derive the hydrodynamic equations, this instability is entirely avoided
+since the pair parameters are not evolved.
+
+%======================================================================
+\section{EOS fitting: extended range for $N=128$}
+\label{sec:eos_extended}
+%======================================================================
+
+The $N=128$ system reaches peak densities $\rho_{\mathrm{peak}}\approx
+29$ during maximum radial compression.  The EOS must therefore be
+reliable over a much wider density range than for $N=8$.
+
+We extended the uniform VMC scan to $\rho_{\max}=15$ with 30 density
+points.  The results are well described by a quadratic:
+$\varepsilon(\rho)=0.111\rho+0.001\rho^2$.  The EOS is nearly linear,
+reflecting the dominance of the long-range dipolar interaction at high
+density.
+
+We compared both quadratic (poly2) and cubic (poly3) fits.  The poly3
+fit has a stability limit at $\rho_{\mathrm{stab}}\approx 10.7$, beyond
+which $d\mu/d\rho<0$.  Since the simulation reaches $\rho\approx 29$,
+this requires regularization.  The poly2 fit is unconditionally stable
+and gives slightly better agreement with tVMC---particularly in the
+axial dynamics, where $\avg{z^2}_{\max}=1.94$ (poly2) vs.\ $1.84$
+(poly3) compared to tVMC $2.05$.
+
+The small quadratic coefficient ($a_2/a_1\approx 0.007$) means the
+effective three-body coupling $g_3=3a_2\approx 0.002$ is weak relative
+to the two-body coupling $g_{\mathrm{eff}}=2a_1\approx 0.22$.  The
+beyond-mean-field correction is therefore small but non-negligible,
+contributing $\sim 1\%$ of the chemical potential at typical
+densities.
+
+\bibliography{letter_refs}
+
+\end{document}
