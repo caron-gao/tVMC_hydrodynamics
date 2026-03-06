@@ -2,7 +2,7 @@
 """
 Fig 4 (single-column, vertical):
   (a) N=128 GPE dynamics vs tVMC (validation)
-  (b) N=10000 GPE prediction (t=10, weak interaction)
+  (b) N=8192 GPE prediction (same C3=1e-3 interaction)
 """
 import os
 import numpy as np
@@ -14,7 +14,7 @@ rc('text', usetex=True)
 rc('font', family='serif', size=9)
 
 BASEDIR = '..'
-COL_W = 3.4  # PRL single-column width in inches
+COL_W = 3.4
 
 fig, axes = plt.subplots(2, 1, figsize=(COL_W, 4.6))
 
@@ -62,23 +62,23 @@ ax.set_xlim(0, min(t_tvmc[-1], 6.0))
 ax.text(0.04, 0.92, r'(a)', transform=ax.transAxes, fontsize=10,
         fontweight='bold', va='top')
 
-# ── Panel (b): N=10000 prediction ──
+# ── Panel (b): N=8192 prediction (same interaction C3=1e-3) ──
 ax = axes[1]
 
-d10k = np.load(f'{BASEDIR}/hydro/results/hydro_results_N10000_long.npz',
-               allow_pickle=True)
-t_10k = d10k['times']
-rho2_10k = d10k['rho2']
-z2_10k = d10k['z2']
+d8k = np.load(f'{BASEDIR}/hydro/results/hydro_results_N8192.npz',
+              allow_pickle=True)
+t_8k = d8k['times']
+rho2_8k = d8k['rho2']
+z2_8k = d8k['z2']
 
-ax.plot(t_10k, rho2_10k, 'b-', lw=0.7, label=r'$\langle\rho^2\rangle$')
-ax.plot(t_10k, z2_10k, 'r-', lw=0.7, label=r'$\langle z^2\rangle$')
+ax.plot(t_8k, rho2_8k, 'b-', lw=0.7)
+ax.plot(t_8k, z2_8k, 'r-', lw=0.7)
 
+ax.annotate(r'$\langle\rho^2\rangle$', xy=(1.5, 6.5), fontsize=8)
+ax.annotate(r'$\langle z^2\rangle$', xy=(1.5, 3.5), fontsize=8)
 ax.set_xlabel(r'$t$')
 ax.set_ylabel(r'$\langle r^2\rangle$')
-ax.legend(fontsize=7, loc='upper right',
-          handlelength=1.5, handletextpad=0.4)
-ax.set_xlim(0, t_10k[-1])
+ax.set_xlim(0, t_8k[-1])
 ax.text(0.04, 0.92, r'(b)', transform=ax.transAxes, fontsize=10,
         fontweight='bold', va='top')
 

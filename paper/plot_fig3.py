@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fig 3 (single-column): μ(ρ) = d(ρε)/dρ for both interaction strengths
-       Showing VMC data points (numerical derivative) and polynomial fits.
+Fig 3 (single-column, flat): μ(ρ) from improved VMC for C3=1e-3.
+       Shows VMC data points (numerical derivative) and polynomial fit.
 """
 import numpy as np
 import matplotlib
@@ -12,77 +12,58 @@ rc('text', usetex=True)
 rc('font', family='serif', size=9)
 
 BASEDIR = '..'
-COL_W = 3.4  # PRL single-column width in inches
+COL_W = 3.4
 
 
 def mu_poly2(rho, a1, a2):
     return 2 * a1 * rho + 3 * a2 * rho**2
 
 
-# ── Load EOS data ──
+# ── Load improved EOS data (C3=1e-3, high quality) ──
+import os
+hq_vmc = f'{BASEDIR}/eos/eos_vmc_C3_1e-3_hq.npz'
+hq_fit = f'{BASEDIR}/eos/eos_fit_C3_1e-3_hq.npz'
 
-# Original interaction C3=1e-3
-eos_orig_vmc = np.load(f'{BASEDIR}/eos/eos_vmc_results_extended.npz', allow_pickle=True)
-rho_orig = eos_orig_vmc['rho']
-E_orig = eos_orig_vmc['E_per_N']
-E_orig_err = eos_orig_vmc['E_per_N_err']
+if os.path.exists(hq_vmc):
+    eos_vmc = np.load(hq_vmc, allow_pickle=True)
+    print(f"Loaded HQ VMC: {hq_vmc}")
+else:
+    eos_vmc = np.load(f'{BASEDIR}/eos/eos_vmc_results_extended.npz', allow_pickle=True)
+    print("Fallback to extended VMC")
 
-eos_orig_fit = np.load(f'{BASEDIR}/eos/eos_fit_extended.npz', allow_pickle=True)
-poly2_orig = eos_orig_fit['poly2_coeffs']
+if os.path.exists(hq_fit):
+    eos_fit = np.load(hq_fit, allow_pickle=True)
+    print(f"Loaded HQ fit: {hq_fit}")
+else:
+    eos_fit = np.load(f'{BASEDIR}/eos/eos_fit_extended.npz', allow_pickle=True)
+    print("Fallback to extended fit")
 
-# Weak interaction C3=1e-4
-eos_weak_vmc = np.load(f'{BASEDIR}/eos/eos_vmc_weak.npz', allow_pickle=True)
-rho_weak = eos_weak_vmc['rho']
-E_weak = eos_weak_vmc['E_per_N']
-E_weak_err = eos_weak_vmc['E_per_N_err']
+rho_data = eos_vmc['rho']
+E_data = eos_vmc['E_per_N']
+E_err = eos_vmc['E_per_N_err']
+poly2_coeffs = eos_fit['poly2_coeffs']
 
-eos_weak_fit = np.load(f'{BASEDIR}/eos/eos_fit_weak.npz', allow_pickle=True)
-poly2_weak = eos_weak_fit['poly2_coeffs']
+print(f"poly2 coeffs: a1={poly2_coeffs[0]:.6f}, a2={poly2_coeffs[1]:.6f}")
 
-# Compute μ data points from VMC: μ = d(ρε)/dρ via numerical derivative
-def compute_mu_data(rho, eps, eps_err):
-    """Compute μ = d(ρε)/dρ from discrete (ρ, ε) data using central differences."""
-    rho_eps = rho * eps
-    mu = np.gradient(rho_eps, rho)
-    # Error propagation (approximate): δ(ρε) ≈ ρ·δε, then δμ ≈ ρ·δε / Δρ
-    # Use average spacing for error estimate
-    drho = np.gradient(rho)
-    mu_err = rho * eps_err / np.abs(drho) * np.sqrt(2)  # factor for diff of noisy data
-    # Cap unreasonable errors (at small ρ where spacing is tiny)
-    mu_err = np.minimum(mu_err, np.abs(mu) * 0.5)
-    return mu, mu_err
+# Compute μ data points: μ = d(ρε)/dρ via numerical derivative
+rho_eps = rho_data * E_data
+mu_data = np.gradient(rho_eps, rho_data)
+drho = np.gradient(rho_data)
+mu_err = rho_data * E_err / np.abs(drho) * np.sqrt(2)
+mu_err = np.minimum(mu_err, np.abs(mu_data) * 0.5)
 
-mu_orig_data, mu_orig_err = compute_mu_data(rho_orig, E_orig, E_orig_err)
-mu_weak_data, mu_weak_err = compute_mu_data(rho_weak, E_weak, E_weak_err)
-
-# Fine grids for fit lines — extend to max data x-value
-rho_max_orig = rho_orig.max()
-rho_max_weak = rho_weak.max()
-rho_fine_orig = np.linspace(0.01, rho_max_orig, 300)
-rho_fine_weak = np.linspace(0.01, rho_max_weak, 300)
-
-# Use common x-axis range (up to the larger of the two)
-x_max = max(rho_max_orig, rho_max_weak)
+# Fit line extending to max data range
+rho_fine = np.linspace(0.01, rho_data.max(), 300)
 
 # ── Plot ──
-fig, ax = plt.subplots(1, 1, figsize=(COL_W, 2.6))
+fig, ax = plt.subplots(1, 1, figsize=(COL_W, 1.8))
 
-# Original C3=1e-3
-ax.errorbar(rho_orig, mu_orig_data, yerr=mu_orig_err, fmt='ko', ms=2.5,
-            capsize=1.2, lw=0.6, elinewidth=0.5, zorder=5,
-            label=r'VMC ($C_3{=}10^{-3}$)')
-ax.plot(rho_fine_orig, mu_poly2(rho_fine_orig, *poly2_orig), 'k-', lw=1.2,
-        alpha=0.8, label=r'Fit ($C_3{=}10^{-3}$)')
-
-# Weak C3=1e-4
-ax.errorbar(rho_weak, mu_weak_data, yerr=mu_weak_err, fmt='rs', ms=2.5,
-            capsize=1.2, lw=0.6, elinewidth=0.5, zorder=5,
-            label=r'VMC ($C_3{=}10^{-4}$)')
-ax.plot(rho_fine_weak, mu_poly2(rho_fine_weak, *poly2_weak), 'r-', lw=1.2,
-        alpha=0.8, label=r'Fit ($C_3{=}10^{-4}$)')
+ax.errorbar(rho_data, mu_data, yerr=mu_err, fmt='ko', ms=2.5,
+            capsize=1.2, lw=0.6, elinewidth=0.5, zorder=5)
+ax.plot(rho_fine, mu_poly2(rho_fine, *poly2_coeffs), 'r-', lw=1.2, alpha=0.8)
 
 ax.set_xlabel(r'$\rho$')
-ax.set_ylabel(r'$\mu(\rho) = d(\rho\varepsilon)/d\rho$')
+ax.set_ylabel(r'$\mu(\rho)$')
 ax.set_xlim(0, 15)
 ax.set_ylim(0, 5)
 
