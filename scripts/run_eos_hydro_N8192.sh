@@ -1,19 +1,30 @@
 #!/bin/zsh
 #
-# Pipeline: improved EOS (C3=1e-3) + N=8192 GPE hydro
+# Pipeline: extended EOS (C3=1e-3) + N=8192 GPE hydro
 #
 # Run on a machine with GPU (for EOS VMC) and decent CPU (for hydro).
 # Assumes the repo is cloned at $REPO.
 #
 # Usage:
-#   zsh run_eos_hydro_N8192.sh
+#   zsh run_eos_hydro_N8192.sh          # Run both EOS + hydro
+#   zsh run_eos_hydro_N8192.sh --eos    # EOS only (skip hydro)
+#   zsh run_eos_hydro_N8192.sh --hydro  # Hydro only (skip EOS, use existing fit)
 #
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 echo "Repo root: $REPO"
 
-# ─── Step 1: High-quality EOS for C3=1e-3, C6=1e-6 ───
+RUN_EOS=true
+RUN_HYDRO=true
+if [[ "${1:-}" == "--eos" ]]; then
+    RUN_HYDRO=false
+elif [[ "${1:-}" == "--hydro" ]]; then
+    RUN_EOS=false
+fi
+
+# ─── Step 1: Extended EOS for C3=1e-3, C6=1e-6 (rho up to 500) ───
+if $RUN_EOS; then
 echo ""
 echo "========================================"
 echo " Step 1: Uniform VMC EOS (C3=1e-3)"
@@ -24,14 +35,14 @@ cd "$REPO/eos"
 python3 uniform_vmc_eos.py \
     --C3 1e-3 \
     --C6 1e-6 \
-    --N_part 8 \
+    --N_part 32 \
     --n_walkers 32768 \
     --n_equil 300 \
-    --n_meas 1000 \
+    --n_meas 5000 \
     --thin 5 \
-    --n_rho 40 \
-    --rho_min 0.05 \
-    --rho_max 15.0 \
+    --n_rho 20 \
+    --rho_min 1 \
+    --rho_max 200.0 \
     --output eos_vmc_C3_1e-3_hq.npz \
     --seed 12345
 
@@ -44,8 +55,10 @@ python3 fit_eos.py \
 
 echo ""
 echo "EOS fit saved to eos_fit_C3_1e-3_hq.npz"
+fi
 
-# ─── Step 2: N=8192 GPE hydro with improved EOS ───
+# ─── Step 2: N=8192 GPE hydro with extended EOS ───
+if $RUN_HYDRO; then
 echo ""
 echo "========================================"
 echo " Step 2: GPE Hydro N=8192 (C3=1e-3)"
@@ -61,7 +74,7 @@ cd "$REPO/hydro"
 # t_max=6 to capture several breathing periods.
 
 python3 run_hydro_largeN.py \
-    --eos_file "$REPO/eos/eos_fit_C3_1e-3_hq.npz" \
+    --eos_file "$REPO/eos/eos_fit_C3_1e-3_N32.npz" \
     --eos_model poly2 \
     --N_part 8192 \
     --omega_rho_quench 2.0 \
@@ -70,6 +83,7 @@ python3 run_hydro_largeN.py \
     --N_z 512 \
     --cfl 0.3 \
     --output "$REPO/hydro/results/hydro_results_N8192.npz"
+fi
 
 echo ""
 echo "========================================"

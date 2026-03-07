@@ -19,24 +19,15 @@ def mu_poly2(rho, a1, a2):
     return 2 * a1 * rho + 3 * a2 * rho**2
 
 
-# ── Load improved EOS data (C3=1e-3, high quality) ──
+# ── Load N=32 EOS data (C3=1e-3, finite-size converged) ──
 import os
-hq_vmc = f'{BASEDIR}/eos/eos_vmc_C3_1e-3_hq.npz'
-hq_fit = f'{BASEDIR}/eos/eos_fit_C3_1e-3_hq.npz'
+vmc_file = f'{BASEDIR}/eos/eos_vmc_C3_1e-3_N32.npz'
+fit_file = f'{BASEDIR}/eos/eos_fit_C3_1e-3_N32.npz'
 
-if os.path.exists(hq_vmc):
-    eos_vmc = np.load(hq_vmc, allow_pickle=True)
-    print(f"Loaded HQ VMC: {hq_vmc}")
-else:
-    eos_vmc = np.load(f'{BASEDIR}/eos/eos_vmc_results_extended.npz', allow_pickle=True)
-    print("Fallback to extended VMC")
-
-if os.path.exists(hq_fit):
-    eos_fit = np.load(hq_fit, allow_pickle=True)
-    print(f"Loaded HQ fit: {hq_fit}")
-else:
-    eos_fit = np.load(f'{BASEDIR}/eos/eos_fit_extended.npz', allow_pickle=True)
-    print("Fallback to extended fit")
+eos_vmc = np.load(vmc_file, allow_pickle=True)
+eos_fit = np.load(fit_file, allow_pickle=True)
+print(f"Loaded N=32 VMC: {vmc_file}")
+print(f"Loaded N=32 fit: {fit_file}")
 
 rho_data = eos_vmc['rho']
 E_data = eos_vmc['E_per_N']
@@ -64,8 +55,8 @@ ax.plot(rho_fine, mu_poly2(rho_fine, *poly2_coeffs), 'r-', lw=1.2, alpha=0.8)
 
 ax.set_xlabel(r'$\rho$')
 ax.set_ylabel(r'$\mu(\rho)$')
-ax.set_xlim(0, 15)
-ax.set_ylim(0, 4)
+ax.set_xlim(0, rho_data.max() * 1.05)
+ax.set_ylim(0, None)
 
 plt.tight_layout()
 plt.savefig('fig3_eos.pdf', dpi=600, bbox_inches='tight')

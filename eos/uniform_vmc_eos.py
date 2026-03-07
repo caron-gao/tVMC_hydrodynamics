@@ -635,8 +635,7 @@ def main():
         print("=== CPU test mode: reduced parameters ===")
 
     N = args.N_part
-    rho_grid = np.exp(np.linspace(
-        np.log(args.rho_min), np.log(args.rho_max), args.n_rho))
+    rho_grid = np.linspace(args.rho_min, args.rho_max, args.n_rho)
 
     print(f"\nUniform VMC Equation of State")
     print(f"  N={N}, walkers={args.n_walkers}, equil={args.n_equil}, "
