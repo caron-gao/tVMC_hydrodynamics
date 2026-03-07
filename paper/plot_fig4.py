@@ -52,8 +52,8 @@ if gpe_file:
 else:
     print("WARNING: No N=128 GPE result found!")
 
-ax.annotate(r'$\langle\rho^2\rangle$', xy=(1.5, 1.4), fontsize=8)
-ax.annotate(r'$\langle z^2\rangle$', xy=(1.5, 0.7), fontsize=8)
+ax.annotate(r'$\langle\rho^2\rangle$', xy=(2.1, 0.7), fontsize=8)
+ax.annotate(r'$\langle z^2\rangle$', xy=(2.5, 1.7), fontsize=8)
 ax.set_xlabel(r'$t$')
 ax.set_ylabel(r'$\langle r^2\rangle$')
 ax.legend(fontsize=7, loc='upper right',
@@ -74,8 +74,8 @@ z2_8k = d8k['z2']
 ax.plot(t_8k, rho2_8k, 'b-', lw=0.7)
 ax.plot(t_8k, z2_8k, 'r-', lw=0.7)
 
-ax.annotate(r'$\langle\rho^2\rangle$', xy=(1.5, 6.5), fontsize=8)
-ax.annotate(r'$\langle z^2\rangle$', xy=(1.5, 3.5), fontsize=8)
+ax.annotate(r'$\langle\rho^2\rangle$', xy=(1.3, 2.5), fontsize=8)
+ax.annotate(r'$\langle z^2\rangle$', xy=(1.5, 10.0), fontsize=8)
 ax.set_xlabel(r'$t$')
 ax.set_ylabel(r'$\langle r^2\rangle$')
 ax.set_xlim(0, t_8k[-1])
@@ -83,6 +83,6 @@ ax.text(0.04, 0.92, r'(b)', transform=ax.transAxes, fontsize=10,
         fontweight='bold', va='top')
 
 plt.tight_layout(h_pad=1.5)
-plt.savefig('fig4_dynamics.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('fig4_dynamics.pdf', dpi=600, bbox_inches='tight')
 print('Saved fig4_dynamics.pdf')
 plt.close()

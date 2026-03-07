@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Fig 2 (figure*, two-column): Δexp(2u2) heatmap at 4 time snapshots
-     1×4 panels, r ∈ [0, 0.5], cosθ ∈ [-1, 1]
+    1×4 panels, r ∈ [0, 0.5], cosθ ∈ [-1, 1]
 """
 import numpy as np
 import matplotlib
@@ -22,7 +22,7 @@ kappa = float(d['kappa_cusp'])
 eps_c = float(d['eps_cusp'])
 rc_cusp = float(d['rc_cusp'])
 ell2 = np.exp(np.linspace(np.log(float(d['ell2_min'])),
-                           np.log(float(d['ell2_max'])), n2))
+                        np.log(float(d['ell2_max'])), n2))
 
 snapshots = d['param_snapshots']
 snap_times = d['snapshot_times']
@@ -78,7 +78,7 @@ dg2_grids = [g2 - g2_0 for g2 in g2_grids]
 for col in range(1, 4):
     dg = dg2_grids[col]
     print(f"t={snap_times[snap_indices[col]]:.2f}: "
-          f"Δg2 range [{dg.min():.4f}, {dg.max():.4f}]")
+        f"Δg2 range [{dg.min():.4f}, {dg.max():.4f}]")
 
 # ── Plot ──
 fig, axes = plt.subplots(1, 4, figsize=(7.0, 1.6))
@@ -91,7 +91,7 @@ for col, (si, t_target) in enumerate(zip(snap_indices, target_times)):
 
     ax = axes[col]
     im = ax.pcolormesh(r_arr, cos_arr, dg2_grids[col], cmap='RdBu_r',
-                       vmin=vmin, vmax=vmax, shading='auto')
+                    vmin=vmin, vmax=vmax, shading='auto')
     ax.set_title(t_label, fontsize=9)
     ax.set_xlabel(r'$r$')
     if col == 0:
@@ -109,6 +109,6 @@ cb = fig.colorbar(im, cax=cax)
 cb.set_label(r'$\Delta\, e^{2u_2}$', fontsize=9)
 cb.ax.tick_params(labelsize=7)
 
-plt.savefig('fig2_u2_heatmap.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('fig2_u2_heatmap.pdf', dpi=600, bbox_inches='tight')
 print('Saved fig2_u2_heatmap.pdf')
 plt.close()

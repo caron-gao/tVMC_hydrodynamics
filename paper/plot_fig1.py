@@ -78,8 +78,8 @@ ax.plot(d128_frz['times'], d128_frz['rho2_values'], 'b--', lw=0.8, alpha=0.85,
 ax.plot(d128_full['times'], d128_full['z2_values'], 'r-', lw=0.8, alpha=0.5)
 ax.plot(d128_frz['times'], d128_frz['z2_values'], 'b--', lw=0.8, alpha=0.5)
 # Text labels offset from the curves
-ax.annotate(r'$\langle\rho^2\rangle$', xy=(0.55, 1.55), fontsize=8, color='k')
-ax.annotate(r'$\langle z^2\rangle$', xy=(0.55, 0.45), fontsize=8, color='k')
+ax.annotate(r'$\langle\rho^2\rangle$', xy=(1.5, 1.0), fontsize=8, color='k')
+ax.annotate(r'$\langle z^2\rangle$', xy=(2.0, 1.8), fontsize=8, color='k')
 ax.set_xlabel(r'$t$')
 ax.set_ylabel(r'$\langle r^2\rangle$')
 ax.legend(fontsize=7, ncol=1, loc='upper right',
@@ -89,6 +89,6 @@ ax.text(0.04, 0.92, r'(b)', transform=ax.transAxes, fontsize=10,
         fontweight='bold', va='top')
 
 plt.tight_layout(h_pad=1.5)
-plt.savefig('fig1_hnc_dynamics.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('fig1_hnc_dynamics.pdf', dpi=600, bbox_inches='tight')
 print('Saved fig1_hnc_dynamics.pdf')
 plt.close()
