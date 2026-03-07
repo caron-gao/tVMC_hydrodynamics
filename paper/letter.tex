@@ -75,7 +75,7 @@ approximation, this yields a generalized Gross--Pitaevskii equation with
 a density-dependent chemical potential $\mu(\rho)$.  For a trapped
 microwave-shielded dipolar Bose gas, the reduced dynamics reproduces the
 full tVMC breathing oscillations for $N=8$--$128$ with below-1\%
-frequency error and about 2\% amplitude error, while lowering the
+frequency error and $\sim\!5\%$ amplitude error, while lowering the
 computational cost by more than an order of magnitude.  Our results
 establish a first-principles route from correlated many-body wave
 functions to predictive hydrodynamics for molecular gases, quantum
@@ -399,19 +399,20 @@ $\delta\mu < 10^{-8}$.
 \emph{Validation against tVMC.}---We benchmark the generalized GPE
 against frozen-$u_2$ tVMC at both weak and moderate interaction
 strength.  For $N=8$, the GPE ground state reproduces the tVMC moments
-to 0.7\% and the energy to 0.15\% (Table~S1~\cite{SM_note}).  The
+to $\sim\!1\%$ and the energy to 0.7\% (Table~S1~\cite{SM_note}).  The
 breathing frequency is $\omega_{\mathrm{br}} = 4.19 \approx 2\omega_\rho$
 in both methods, and the oscillation amplitudes of $\avg{\rho^2}$ and
-$\avg{z^2}$ agree to within 1\%.
+$\avg{z^2}$ agree to within $\sim\!1\%$.
 
 For $N=128$, where the interaction energy reaches $\sim 21\%$ of the
 total, the same EOS-based GPE remains accurate.  The ground-state
-moments agree with tVMC to $0.35\%$ for $\avg{\rho^2}$ and $1.05\%$ for
-$\avg{z^2}$, while the total energy differs by 2.8\%, consistent with a
-residual LDA error at higher density.  The dynamical benchmark in
+moments agree with tVMC to $3.5\%$ for $\avg{\rho^2}$ and $4.2\%$ for
+$\avg{z^2}$, while the total energy differs by only $0.4\%$.
+The few-percent offset in moments is consistent with a residual LDA
+error at higher density.  The dynamical benchmark in
 Fig.~\ref{fig:dynamics}(a) is likewise preserved: both approaches give
 $\omega_{\mathrm{br}} = 4.19$, and the $\avg{\rho^2}(t)$ amplitude agrees
-to about 2\%.  Notably, although the quench acts only on $\omega_\rho$,
+to about 5\%.  Notably, although the quench acts only on $\omega_\rho$,
 the axial moment $\avg{z^2}(t)$ also oscillates---driven by nonlinear
 radial--axial coupling through the interaction energy---and the GPE
 captures this cross-coupling quantitatively
@@ -487,9 +488,9 @@ coupling.  The VMC-derived EOS therefore provides a first-principles
 route to the effective interaction strength that phenomenological GP
 theories must take as an external input.
 
-The main quantitative limitation visible here is the $\sim 3\%$ energy
-offset at $N=128$, which points to gradient corrections beyond the
-LDA~\cite{Ancilotto2017}; such terms, of the form
+The main quantitative limitation visible here is the few-percent offset
+in ground-state moments at $N=128$, which points to gradient corrections
+beyond the LDA~\cite{Ancilotto2017}; such terms, of the form
 $\propto(\nabla\rho)^2/\rho$, could be systematically extracted from
 VMC at spatially modulated densities and incorporated as a beyond-LDA
 energy functional.  The reduction is expected to break down for
@@ -509,7 +510,7 @@ dynamics from tVMC maps exactly onto superfluid hydrodynamics within the
 frozen-$u_2$ manifold, with the required equation of state obtained from
 a single uniform-system VMC calculation.  The resulting generalized GPE
 reproduces the breathing dynamics of microwave-shielded dipolar bosons
-from $N=8$ to $N=128$ with below-1\% frequency error and $\sim 2\%$
+from $N=8$ to $N=128$ with below-1\% frequency error and $\sim\!5\%$
 amplitude error, and predicts a robust breathing frequency
 $\omega_{\mathrm{br}} \approx 4.19$ that persists from $N=8$ to
 $N=8192$ as the interaction fraction grows from $3.5\%$ to $38\%$---a

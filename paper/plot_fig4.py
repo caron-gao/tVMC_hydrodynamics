@@ -29,6 +29,7 @@ z2_tvmc = d128['z2_values']
 
 # GPE result
 gpe_candidates = [
+    f'{BASEDIR}/hydro/results/hydro_results_N128_N32eos.npz',
     f'{BASEDIR}/hydro/results/hydro_results_N128_new_gs_poly2.npz',
     f'{BASEDIR}/hydro/results/hydro_results_N128_gs_poly2.npz',
     f'{BASEDIR}/hydro/results/hydro_results_N128.npz',

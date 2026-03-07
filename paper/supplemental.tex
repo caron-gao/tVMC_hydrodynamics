@@ -14,12 +14,18 @@
 \begin{document}
 
 \title{Supplemental Material for:\\
-``Superfluid hydrodynamics from correlated many-body dynamics:
-Bridging variational Monte Carlo and Gross--Pitaevskii theory
-for microwave-shielded Bose gases''}
+``From variational Monte Carlo to superfluid hydrodynamics
+in microwave-shielded dipolar Bose gases''}
 
-\author{Xinyuan~Wei}
-\affiliation{Department of Physics, University}
+\author{Xin-Yuan~Gao}
+\affiliation{Department of Physics, The Chinese University of Hong Kong,
+Shatin, New Territories, Hong Kong, China}
+\author{Kai~Yuen~Lee}
+\affiliation{Department of Physics, The Chinese University of Hong Kong,
+Shatin, New Territories, Hong Kong, China}
+\author{Yangqian~Yan}
+\affiliation{Department of Physics, The Chinese University of Hong Kong,
+Shatin, New Territories, Hong Kong, China}
 
 \date{\today}
 
@@ -378,41 +384,78 @@ pressure and the EOS contribute significantly.
 To extract the EOS, we perform VMC calculations for a uniform system
 of $N$ particles in a cubic box with periodic boundary conditions at
 a grid of densities.  The two-body Jastrow $u_2(r,\hat\br)$ is frozen
-at the ground-state values from the trapped-system tVMC, while $u_1$
-is taken as constant.
+at the ground-state values from the trapped-system tVMC (optimized for
+$N=8$ in the isotropic trap), while $u_1$ is taken as constant.
 
-At each density, we use $N_w=8{,}192$ walkers with 200 equilibration
-sweeps and 500 measurement sweeps (thinning by 5) to estimate the
-energy per particle $\varepsilon(\rho)$.  Error bars are obtained from
-a blocking analysis.
+We use $N_w=32{,}768$ walkers with 300 equilibration sweeps and
+5000 measurement sweeps (thinning by 5) to estimate the energy per
+particle $\varepsilon(\rho)$.  Error bars are obtained from a blocking
+analysis.  The density grid consists of 20 uniformly spaced points
+over $\rho\in[1,200]$, covering the full range of densities
+encountered in the trapped dynamics for $N$ up to $8192$.
 
-For $N=8$, we scan 20 densities logarithmically over
-$\rho\in[0.05,3.0]$.  For $N=128$, the higher peak densities
-encountered during compression require extending the range to
-$\rho\in[0.05,15.0]$ with 30 density points.
+\subsection{Finite-size convergence}
+\label{sec:eos_finite_size}
+
+The periodic-box VMC is subject to finite-size effects from the
+truncation of the Jastrow range and the $(N-1)/N$ combinatorial
+factor in the pair-energy estimator.  To assess convergence, we
+performed the EOS calculation with $N=8$, $16$, and $32$ particles
+in the box.  Table~\ref{tab:eos_convergence} shows the resulting
+polynomial coefficients.
+
+\begin{table}[h]
+\caption{Finite-size convergence of EOS coefficients (quadratic fit
+$\varepsilon=a_1\rho+a_2\rho^2$) with the number of particles $N$
+in the periodic box.}
+\label{tab:eos_convergence}
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+$N$ & $a_1$ & $a_2$ \\
+\hline
+8  & 0.1236 & $8.0\times10^{-5}$ \\
+16 & 0.1306 & $7.8\times10^{-5}$ \\
+32 & 0.1335 & $7.5\times10^{-5}$ \\
+$\infty$ (extrap.) & 0.1370 & --- \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The leading coefficient $a_1$ converges as $a_1(N) \approx
+a_1^\infty(1-\alpha/N)$ with $\alpha\approx 0.78$ and
+$a_1^\infty\approx 0.137$, consistent with the dominant $(N-1)/N$
+scaling expected from the pair-energy estimator.  The $N=32$ result
+lies within $2.5\%$ of the extrapolated infinite-system value, and
+Richardson extrapolation from the $N=16$ and $N=32$ pair gives
+$a_1^\infty\approx 0.137$ consistently.  The convergence is shown
+in Fig.~\ref{fig:eos_convergence}.
+
+\begin{figure}[h]
+\includegraphics[width=0.65\columnwidth]{figS_eos_convergence.pdf}
+\caption{Finite-size convergence of the leading EOS coefficient $a_1$
+with the number of particles $N$ in the periodic simulation box.
+Open symbols at $1/N=0$ mark the linear extrapolation
+$a_1^\infty\approx 0.137$.}
+\label{fig:eos_convergence}
+\end{figure}
+
+We use the $N=32$ EOS ($a_1=0.1335$, $a_2=7.5\times10^{-5}$)
+throughout the paper for all GPE calculations.  The quadratic
+coefficient $a_2$ is essentially $N$-independent and negligibly small,
+confirming the near-linearity of the EOS discussed in the main text.
 
 \subsection{Polynomial fitting}
 
-We fit $\varepsilon(\rho)$ to a polynomial using weighted least-squares:
-\begin{equation}
-\varepsilon(\rho) = a_1\rho + a_2\rho^2 + a_3\rho^3.
-\end{equation}
+We fit $\varepsilon(\rho)$ to a polynomial using weighted least-squares.
 Model selection between quadratic ($a_3=0$) and cubic is performed
-using the Akaike information criterion (AIC).
-
-For $N=8$, the cubic fit is preferred:
+using the Akaike information criterion (AIC).  For the $N=32$ data,
+the quadratic fit is preferred:
 \begin{equation}
-a_1 = 0.102,\quad a_2 = 0.023,\quad a_3 = -0.007,
+a_1 = 0.1335,\quad a_2 = 7.5\times 10^{-5},
 \end{equation}
-with reduced $\chi^2_\nu=0.41$.  The negative $a_3$ introduces a
-stability limit $d\mu/d\rho=0$ at $\rho_{\mathrm{stab}}\approx 2.67$,
-above which we regularize by linear extrapolation.
-
-For $N=128$, a quadratic suffices:
-\begin{equation}
-a_1 = 0.111,\quad a_2 = 0.001,\quad a_3 = 0,
-\end{equation}
-which is unconditionally stable ($d\mu/d\rho>0$ for all $\rho$).
+which is unconditionally stable ($d\mu/d\rho>0$ for all $\rho>0$).
+The cubic fit adds a negligible $a_3\approx -3\times10^{-7}$
+without improving $\chi^2_\nu$.
 
 \subsection{Emergent effective interactions}
 
@@ -421,22 +464,20 @@ a physically transparent interpretation.  Comparing with the standard
 GPE nonlinearity $\mu=g\rho$:
 \begin{itemize}
 \item The leading term $2a_1\rho$ defines a \emph{renormalized
-two-body coupling} $g_{\mathrm{eff}}=2a_1$ that absorbs the effect of
-frozen pair correlations into an effective contact interaction.
+two-body coupling} $g_{\mathrm{eff}}=2a_1\approx 0.267$ that absorbs
+the effect of frozen pair correlations into an effective contact
+interaction.
 \item The next-order term $3a_2\rho^2$ has the structure of an
 \emph{effective three-body interaction} $g_3|\psi|^4$ with
-$g_3=3a_2$.
+$g_3=3a_2\approx 2.3\times10^{-4}$, which is negligible for the
+densities encountered here.
 \end{itemize}
 This three-body term is not a genuine microscopic three-body force but
-emerges from integrating out the density-dependent pair correlations
-encoded in $u_2$.  The resulting GPE
-\begin{equation}
-i\partial_t\psi = \left[-\frac{1}{2}\nabla^2 + V_{\mathrm{tr}}
-+ g_{\mathrm{eff}}|\psi|^2 + g_3|\psi|^4\right]\psi
-\end{equation}
-provides a concrete, non-perturbative realization of the extended GPE
-discussed in the context of quantum droplets~\cite{Petrov2015} and
-dipolar condensates~\cite{Chomaz2023}.
+emerges from the weak density dependence of the pair correlations
+encoded in $u_2$.  For the present weak-interaction regime
+($C_3=10^{-3}$), the EOS is dominated by the linear term, yielding a
+generalized GPE of standard form with an effective coupling
+$g_{\mathrm{eff}}$.
 
 %======================================================================
 \section{Hydrodynamic PDE solver: numerical details}
@@ -456,6 +497,11 @@ coordinates $(r,z)$:
 For $N=8$: domain $r\in[0,5]$, $z\in[-5,5]$, grid $128\times 256$.
 
 For $N=128$: domain $r\in[0,6]$, $z\in[-8,8]$, grid $192\times 512$.
+
+For $N=8192$: domain $r\in[0,12.06]$, $z\in[-12.06,12.06]$, grid
+$256\times 512$.  The domain size is chosen as $\sim 2.5\,R_{\mathrm{TF}}$
+where $R_{\mathrm{TF}}\approx(15Ng_{\mathrm{eff}}/4\pi)^{1/5}$.
+Grid convergence is verified in Sec.~\ref{sec:convergence}.
 
 \subsection{Boundary conditions}
 
@@ -532,7 +578,8 @@ negligible.
 
 \begin{table}[h]
 \caption{Comparison of frozen-$u_2$ tVMC and GPE (imaginary-time ground
-state, fourth-order Laplacian) for the quench $\omega_\rho:1\to 2$.
+state, fourth-order Laplacian, $N=32$ EOS) for the quench
+$\omega_\rho:1\to 2$.
 $\delta E/E$ for tVMC is the energy drift (not stochastic fluctuation);
 for GPE it is the deterministic conservation error.}
 \label{tab:results}
@@ -543,19 +590,19 @@ for GPE it is the deterministic conservation error.}
  & tVMC & GPE & tVMC & GPE \\
 \hline
 $E_{\mathrm{gs}}$
-& 12.42 & 12.44 & 276.8 & 269.0 \\
+& 12.42 & 12.51 & 276.8 & 278.0 \\
 $\langle\rho^2\rangle_0$
-& 1.051 & 1.058 & 1.555 & 1.561 \\
+& 1.051 & 1.063 & 1.555 & 1.609 \\
 $\langle z^2\rangle_0$
-& 0.525 & 0.529 & 0.772 & 0.780 \\
+& 0.525 & 0.532 & 0.772 & 0.805 \\
 $\omega_{\mathrm{br}}$
 & 4.19 & 4.19 & 4.19 & 4.19 \\
 $\langle\rho^2\rangle$ range
-& [0.26,\,1.06] & [0.26,\,1.06] & [0.37,\,1.56] & [0.37,\,1.56] \\
+& [0.26,\,1.06] & [0.27,\,1.06] & [0.38,\,1.56] & [0.37,\,1.61] \\
 $\langle z^2\rangle$ range
-& [0.52,\,0.61] & [0.53,\,0.61] & [0.59,\,2.05] & [0.56,\,2.00] \\
+& [0.52,\,0.61] & [0.53,\,0.63] & [0.59,\,2.05] & [0.59,\,2.01] \\
 $|\delta E/E|$
-& $<0.01\%$ & $0.1\%$ & $2.8\%$ & $0.05\%$ \\
+& $<0.01\%$ & $0.13\%$ & --- & $0.05\%$ \\
 $\max|\delta N/N|$
 & --- & $7\!\times\!10^{-4}$ & --- & $3\!\times\!10^{-4}$ \\
 \end{tabular}
@@ -603,7 +650,32 @@ $|\delta N/N|=3.2\times10^{-6}$ and $|\delta E/E|=2.8\times10^{-6}$.
 
 For $N=128$, the larger grid ($192\times 512$) achieves
 $\max|\delta N/N|=3.1\times10^{-4}$ and
-$\max|\delta E/E|=4.5\times10^{-4}$ over $t\in[0,6]$.
+$\max|\delta E/E|=4.7\times10^{-4}$ over $t\in[0,6]$.
+
+\subsection{Grid convergence for $N=8192$}
+
+For the large-$N$ prediction, we verify that the standard grid
+($256\times 512$, domain $R=Z\approx 12$) is well converged by
+comparing with a finer grid ($320\times 640$).
+Table~\ref{tab:conv_8192} shows the results.
+
+\begin{table}[h]
+\caption{Grid convergence for $N=8192$ GPE ($t\in[0,6]$).}
+\label{tab:conv_8192}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+Grid & $E_{\mathrm{gs}}$ & $\omega_{\mathrm{br}}$ & $\max|\delta E/E|$\\
+\hline
+$256\times 512$ & 70026.6 & 4.186 & $2.5\times10^{-4}$\\
+$320\times 640$ & 70026.1 & 4.187 & $1.6\times10^{-4}$\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The ground-state energy agrees to $0.0008\%$, the breathing frequency
+to $0.02\%$, and the second moments to six significant digits.  The
+$256\times 512$ grid is therefore well converged for all reported
+observables.
 
 %======================================================================
 \section{Scaling ansatz}
@@ -620,11 +692,13 @@ $\rho(\br,t) = (\lambda_r^2\lambda_z)^{-1}
 \ddot\lambda_z &= -\omega_z^2\lambda_z
 + \frac{\omega_{z,0}^2}{\lambda_r^2\lambda_z^2}.
 \end{align}
-This is the non-interacting ($\gamma=1$) limit, appropriate for
-benchmarking the trap-dominated regime.  The scaling ansatz predicts
-a breathing frequency close to $2\omega_\rho$ but overestimates the
-oscillation amplitude because it neglects quantum pressure corrections
-to the self-similar assumption.
+For a polytropic EOS $\mu\propto\rho^\gamma$ with $\gamma=1$
+(contact interaction), the scaling ansatz provides an exact description
+of the dynamics in the Thomas--Fermi limit.  The predicted breathing
+frequency depends only on the trap geometry and is independent of the
+coupling strength, consistent with the numerical observation that
+$\omega_{\mathrm{br}}\approx 4.19$ is unchanged from $N=8$ to
+$N=8192$ (see main text).
 
 %======================================================================
 \section{Comparison between frozen-$u_2$ tVMC and full tVMC}
@@ -734,34 +808,20 @@ derive the hydrodynamic equations, this instability is entirely avoided
 since the pair parameters are not evolved.
 
 %======================================================================
-\section{EOS fitting: extended range for $N=128$}
-\label{sec:eos_extended}
+\section{EOS density range}
+\label{sec:eos_range}
 %======================================================================
 
-The $N=128$ system reaches peak densities $\rho_{\mathrm{peak}}\approx
-29$ during maximum radial compression.  The EOS must therefore be
-reliable over a much wider density range than for $N=8$.
-
-We extended the uniform VMC scan to $\rho_{\max}=15$ with 30 density
-points.  The results are well described by a quadratic:
-$\varepsilon(\rho)=0.111\rho+0.001\rho^2$.  The EOS is nearly linear,
-reflecting the dominance of the long-range dipolar interaction at high
-density.
-
-We compared both quadratic (poly2) and cubic (poly3) fits.  The poly3
-fit has a stability limit at $\rho_{\mathrm{stab}}\approx 10.7$, beyond
-which $d\mu/d\rho<0$.  Since the simulation reaches $\rho\approx 29$,
-this requires regularization.  The poly2 fit is unconditionally stable
-and gives slightly better agreement with tVMC---particularly in the
-axial dynamics, where $\avg{z^2}_{\max}=1.94$ (poly2) vs.\ $1.84$
-(poly3) compared to tVMC $2.05$.
-
-The small quadratic coefficient ($a_2/a_1\approx 0.007$) means the
-effective three-body coupling $g_3=3a_2\approx 0.002$ is weak relative
-to the two-body coupling $g_{\mathrm{eff}}=2a_1\approx 0.22$.  The
-beyond-mean-field correction is therefore small but non-negligible,
-contributing $\sim 1\%$ of the chemical potential at typical
-densities.
+The EOS is computed over the uniform density range
+$\rho\in[1,200]$, which comfortably covers the peak densities
+encountered in the trapped GPE dynamics: $\rho_{\mathrm{peak}}\approx 3$
+for $N=8$, $\approx 9$ for $N=128$, and $\approx 43$ for $N=8192$.
+The quadratic fit ($a_2/a_1\approx 5.6\times10^{-4}$) is
+unconditionally stable ($d\mu/d\rho>0$ for all $\rho$), so no
+regularization is needed.  The beyond-mean-field correction from the
+$a_2\rho^2$ term contributes less than $0.1\%$ of the chemical
+potential at the peak density of the $N=8192$ system, confirming the
+near-linearity of the EOS discussed in the main text.
 
 \bibliography{letter_refs}
 
